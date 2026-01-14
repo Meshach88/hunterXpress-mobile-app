@@ -5,17 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useResponsive } from '../hooks/useResponsiveness';
-import { useFonts } from 'expo-font';
-import {
-  Sora_100Thin,
-  Sora_200ExtraLight,
-  Sora_300Light,
-  Sora_400Regular,
-  Sora_500Medium,
-  Sora_600SemiBold,
-  Sora_700Bold,
-  Sora_800ExtraBold,
-} from '@expo-google-fonts/sora';
+
 
 
 export default function WelcomeScreen() {
@@ -23,6 +13,17 @@ export default function WelcomeScreen() {
     const { width, height } = useWindowDimensions();
     const router = useRouter();
     const { scale, isTablet, spacing, fontSize } = useResponsive();
+
+    const handlePress = (action) => {
+        if (Platform.OS === 'ios') {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }
+        if (action === 'login') {
+            router.push('/(auth)/login');
+        } else if (action === 'signup') {
+            router.push('/(auth)/signup');
+        }
+    };
 
     return <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -52,6 +53,50 @@ export default function WelcomeScreen() {
             </View>
 
             {/* Text Section */}
+            <View style={[styles.textSection, { paddingHorizontal: spacing.lg }]}>
+                <Text style={[styles.title, { fontSize: isTablet ? fontSize.xxxl * 1.5 : fontSize.xxxl * 1.3 }]}>
+                    Let's
+                </Text>
+                <Text style={[styles.title, { fontSize: isTablet ? fontSize.xxxl * 1.5 : fontSize.xxxl * 1.3 }]}>
+                    get started
+                </Text>
+                <Text style={[styles.subtitle, {
+                    fontSize: isTablet ? fontSize.lg : fontSize.md,
+                    marginVertical: spacing.md,
+                }]}>
+                    Everything starts from here
+                </Text>
+            </View>
+
+            {/* Button Section */}
+            <View style={[styles.buttonsSection, { paddingHorizontal: spacing.lg }]}>
+                {/* Log in Button (Outline) */}
+                <TouchableOpacity
+                    style={[styles.button, styles.loginButton, {
+                        height: scale(56),
+                        marginBottom: spacing.md,
+                    }]}
+                    onPress={() => handlePress('login')}
+                    activeOpacity={0.8}
+                >
+                    <Text style={[styles.loginButtonText, { fontSize: fontSize.lg }]}>
+                        Log in
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Sign up Button (Filled) */}
+                <TouchableOpacity
+                    style={[styles.button, styles.signupButton, {
+                        height: scale(56),
+                    }]}
+                    onPress={() => handlePress('signup')}
+                    activeOpacity={0.8}
+                >
+                    <Text style={[styles.signupButtonText, { fontSize: fontSize.lg }]}>
+                        Sign up
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
         </View>
 
@@ -65,7 +110,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
     },
     orangeCircle: {
         position: 'absolute',
@@ -84,5 +129,69 @@ const styles = StyleSheet.create({
     },
     bikeImage: {
         zIndex: 2,
+    },
+    textSection: {
+        marginTop: 20,
+    },
+    title: {
+        fontWeight: '700',
+        color: '#F17500',
+        lineHeight: 48,
+        fontFamily: Platform.select({
+            ios: 'System',
+            android: 'Roboto',
+        }),
+    },
+    subtitle: {
+        fontWeight: '400',
+        color: '#666',
+        fontFamily: Platform.select({
+            ios: 'System',
+            android: 'Roboto',
+        }),
+    },
+    buttonsSection: {
+        paddingBottom: 40,
+    },
+    button: {
+        width: '100%',
+        borderRadius: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 3,
+            },
+        }),
+    },
+    loginButton: {
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: '#F17500',
+    },
+    loginButtonText: {
+        color: '#F17500',
+        fontWeight: '700',
+        fontFamily: Platform.select({
+            ios: 'System',
+            android: 'Roboto',
+        }),
+    },
+    signupButton: {
+        backgroundColor: '#F17500',
+    },
+    signupButtonText: {
+        color: '#FFFFFF',
+        fontWeight: '700',
+        fontFamily: Platform.select({
+            ios: 'System',
+            android: 'Roboto',
+        }),
     },
 })
