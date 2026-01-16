@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "hunter",
+    "name": "HunterXpress",
     "slug": "hunter",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,10 +10,18 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.meshach88.hunter"
+      "bundleIdentifier": "com.meshach88.hunter",
+      "icon":{
+        "dark": "./assets/icons/ios-light.png",
+        "light": "./assets/icons/ios-light.png"
+      }
     },
     "android": {
-      "adaptiveIcon": {},
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "monochromeImage": "./assets/icons/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.meshach88.hunter"
@@ -27,11 +35,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/icons/splash-icon-dark.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
+            "image": "./assets/icons/splash-icon-light.png",
             "backgroundColor": "#000000"
           }
         }

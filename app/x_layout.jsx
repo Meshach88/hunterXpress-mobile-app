@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
 import {
   Sora_100Thin,
@@ -13,6 +14,15 @@ import {
   Sora_800ExtraBold,
 } from '@expo-google-fonts/sora';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
+//Keep splash screen visible while fetching resources
+SplashScreen.preventAutoHideAsync();
+
+//Set animation options
+SplashScreen.setOptions({
+  duration: 400,
+  fade: true
+})
 
 export const unstable_settings = {
   anchor: '(tabs)',
