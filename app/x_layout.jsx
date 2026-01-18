@@ -16,13 +16,13 @@ import {
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 //Keep splash screen visible while fetching resources
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 //Set animation options
-SplashScreen.setOptions({
-  duration: 400,
-  fade: true
-})
+// SplashScreen.setOptions({
+//   duration: 400,
+//   fade: true
+// })
 
 export const unstable_settings = {
   anchor: '(tabs)',

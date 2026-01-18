@@ -46,7 +46,8 @@ export default function WelcomeScreen() {
                     style={[styles.bikeImage, {
                         width: isTablet ? scale(380) : scale(320),
                         height: isTablet ? scale(380) : scale(320),
-                        right: scale(-30),
+                        right: scale(-60),
+                        top: scale(20)
                     }]}
                     resizeMode='contain'
                 />
