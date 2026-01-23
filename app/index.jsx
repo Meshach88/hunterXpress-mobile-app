@@ -4,7 +4,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { useResponsive } from '../hooks/useResponsiveness';
+import { useResponsive } from '@/hooks/use-responsiveness';
 
 
 
@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
             {/* Bike Image Section */}
             <View style={[styles.imageSection, { height: isTablet ? height * 0.5 : height * 0.45 }]}>
                 {/* Big orange circle */}
-                <View style={[styles.orangeCircle, { width: scale(320), height: scale(320), right: scale(-60), top: isTablet ? '25%' : '15%' }]}>
+                <View style={[styles.orangeCircle, { width: isTablet ? scale(380) : scale(320), height: isTablet ? scale(380) : scale(320), right: scale(-60), top: '15%' }]}>
                     {/* Small decorative dot */}
                     <View style={[styles.smallDot, {
                         width: scale(12),
@@ -46,7 +46,7 @@ export default function WelcomeScreen() {
                     style={[styles.bikeImage, {
                         width: isTablet ? scale(380) : scale(320),
                         height: isTablet ? scale(380) : scale(320),
-                        right: scale(-60),
+                        right: isTablet ? scale(-100) : scale(-60),
                         top: scale(20)
                     }]}
                     resizeMode='contain'

@@ -7,21 +7,29 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import { useTheme } from '../../hooks/useTheme';
-import { useResponsive } from '../../hooks/use-responsiveness';
+import * as Haptics from 'expo-haptics';
+import { useTheme } from '@/hooks/useTheme';
+import { useResponsive } from '@/hooks/use-responsiveness';
 
 const { width } = Dimensions.get('window');
 
-const HexagonalGrid = ({ navigation }) => {
+export default function HexagonalGrid({ router }) {
   const { theme } = useTheme();
   const { scale, isTablet } = useResponsive();
 
   const gridItems = [
-    { id: 'send', label: 'SEND', color: '#FF8C00', route: 'Send' },
-    { id: 'stats', label: 'STATS', color: '#000000', route: 'Stats' },
-    { id: 'track', label: 'TRACK', color: '#000000', route: 'Track' },
-    { id: 'receive', label: 'RECIEVE', color: '#8BC34A', route: 'Receive' },
+    { id: 'send', label: 'SEND', color: '#FF8C00', route: '/(customer)/send' },
+    { id: 'stats', label: 'STATS', color: '#000000', route: '/(customer)/stats' },
+    { id: 'track', label: 'TRACK', color: '#000000', route: '/(customer)/track' },
+    { id: 'receive', label: 'RECEIVE', color: '#8BC34A', route: '/(customer)/receive' },
   ];
+
+  const handlePress = (route) => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    router.push(route);
+  };
 
   const containerWidth = width - scale(40);
   const itemWidth = containerWidth / 2 - scale(10);
@@ -38,10 +46,10 @@ const HexagonalGrid = ({ navigation }) => {
               {
                 width: itemWidth,
                 height: itemHeight,
-                backgroundColor: theme.colors.card,
+                backgroundColor: "#ffffff",
               },
             ]}
-            onPress={() => navigation.navigate(gridItems[0].route)}
+            onPress={() => handlePress(gridItems[0].route)}
             activeOpacity={0.8}
           >
             <Text style={[styles.label, { color: gridItems[0].color }]}>
@@ -55,10 +63,10 @@ const HexagonalGrid = ({ navigation }) => {
               {
                 width: itemWidth,
                 height: itemHeight,
-                backgroundColor: theme.colors.card,
+                // backgroundColor: theme.colors.card,
               },
             ]}
-            onPress={() => navigation.navigate(gridItems[1].route)}
+            onPress={() => handlePress(gridItems[1].route)}
             activeOpacity={0.8}
           >
             <Text style={[styles.label, { color: gridItems[1].color }]}>
@@ -75,10 +83,10 @@ const HexagonalGrid = ({ navigation }) => {
               {
                 width: itemWidth,
                 height: itemHeight,
-                backgroundColor: theme.colors.card,
+                // backgroundColor: theme.colors.card,
               },
             ]}
-            onPress={() => navigation.navigate(gridItems[2].route)}
+            onPress={() => handlePress(gridItems[2].route)}
             activeOpacity={0.8}
           >
             <Text style={[styles.label, { color: gridItems[2].color }]}>
@@ -92,10 +100,10 @@ const HexagonalGrid = ({ navigation }) => {
               {
                 width: itemWidth,
                 height: itemHeight,
-                backgroundColor: theme.colors.card,
+                // backgroundColor: theme.colors.card,
               },
             ]}
-            onPress={() => navigation.navigate(gridItems[3].route)}
+            onPress={() => handlePress(gridItems[3].route)}
             activeOpacity={0.8}
           >
             <Text style={[styles.label, { color: gridItems[3].color }]}>
@@ -106,13 +114,19 @@ const HexagonalGrid = ({ navigation }) => {
       </View>
 
       {/* Decorative Lines */}
-      <View style={styles.linesContainer}>
-        <View style={[styles.line, styles.lineOrange]} />
-        <View style={[styles.line, styles.lineGreen]} />
-      </View>
+      {/* <View style={styles.linesContainer}>
+        <LinearGradient
+          colors={['#FF8C00', '#FF8C00']}
+          style={[styles.line, styles.lineOrange]}
+        />
+        <LinearGradient
+          colors={['#8BC34A', '#8BC34A']}
+          style={[styles.line, styles.lineGreen]}
+        />
+      </View> */}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -131,6 +145,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 20,
+    backgroundColor: '#ffffff',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -146,6 +162,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 24,
     fontWeight: '900',
+    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
     letterSpacing: 1,
   },
   linesContainer: {
@@ -161,19 +178,15 @@ const styles = StyleSheet.create({
     height: 3,
   },
   lineOrange: {
-    backgroundColor: '#FF8C00',
     width: '45%',
     top: '30%',
     left: '25%',
     transform: [{ rotate: '30deg' }],
   },
   lineGreen: {
-    backgroundColor: '#8BC34A',
     width: '45%',
     top: '55%',
     left: '30%',
     transform: [{ rotate: '-30deg' }],
   },
 });
-
-export default HexagonalGrid;

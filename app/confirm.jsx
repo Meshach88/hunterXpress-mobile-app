@@ -1,3 +1,4 @@
+// app/confirmation.js
 import React, { useEffect } from 'react';
 import {
     View,
@@ -11,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useResponsive } from '@/hooks/useResponsiveness';
+import { useResponsive } from '@/hooks/use-responsiveness';
 
 export default function ConfirmationScreen() {
     const router = useRouter();
@@ -19,7 +20,9 @@ export default function ConfirmationScreen() {
     const { scale, spacing, fontSize, isTablet } = useResponsive();
 
     // Get user type from params (default to 'Sender')
-    const userType = params?.userType || 'User';
+    const userType = params?.userType || 'Sender';
+    console.log(params)
+    console.log(userType)
 
     // Animation values
     const scaleAnim = new Animated.Value(0);

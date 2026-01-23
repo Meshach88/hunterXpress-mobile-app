@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Platform, KeyboardAvoidingView, StatusBar, Alert, ActivityIndicator } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,73 +13,58 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function SignUpScreen() {
     const router = useRouter();
-    const { signUp, sendOTP } = useAuth();
+    const {signUp, sendOTP, isLoadiing} = useAuth();
     const { scale, spacing, fontSize, isTablet } = useResponsive();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [userType, setUserType] = useState('User');
 
 
     // Form state
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        otp: '',
-        password: '',
-        role: '',
-        // User specific
-        pickupAddress: '',
-        deliveryAddress: '',
-        // Courier specific
-        deliveryMethod: '',
-        vehicleModel: '',
-        vehiclePlate: '',
-        vehicleColor: '',
-        validId: '',
-        proofOfAddress: '',
-        payoutMethod: '',
-        bankName: '',
-        accountNumber: '',
-    });
-
-    useEffect(() => {
-        setFormData((prev) => ({
-            ...prev,
-            role: userType === 'Courier' ? 'courier' : 'customer',
-        }));
-    }, [userType]);
-
+    const [userType, setUserType] = useState('User'); // 'User' or 'Courier'
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [otp, setOtp] = useState('');
+    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
-    const [errors, setErrors] = useState({});
 
-    const validateForm = () => {
-        const newErrors = {};
 
-        if (!formData.name.trim()) {
-            newErrors.name = 'Name is required';
-        }
+    // Courier specific fields
+    const [deliveryMethod, setDeliveryMethod] = useState('');
+    const [vehicleModel, setVehicleModel] = useState('');
+    const [vehiclePlate, setVehiclePlate] = useState('');
+    const [vehicleColor, setvehicleColor] = useState('');
+    const [validId, setValidId] = useState(null);
+    const [proofOfAddress, setProofOfAddress] = useState(null);
+    const [payoutMethod, setPayoutMethod] = useState('');
+    const [bankName, setBankName] = useState('');
+    const [accountNumber, setAccountNumber] = useState('');
 
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = 'Email is invalid';
-        }
+    // User specific fields
+    const [pickupAddress, setPickupAddress] = useState('');
+    const [deliveryAddress, setDeliveryAddress] = useState('');
 
-        if (!formData.phone.trim()) {
-            newErrors.phone = 'Phone number is required';
-        } else if (formData.phone.length < 11) {
-            newErrors.phone = 'Phone number is invalid';
-        }
+    const isUserFormValid =
+        name &&
+        email &&
+        phone &&
+        password &&
+        (otpSent ? otp.length === 6 : true);
 
-        if (!formData.password.trim()) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    const isCourierFormValid =
+        isUserFormValid &&
+        deliveryMethod &&
+        vehicleModel &&
+        vehiclePlate &&
+        vehicleColor &&
+        validId &&
+        proofOfAddress &&
+        payoutMethod &&
+        bankName &&
+        accountNumber;
+
+    const isFormValid =
+        userType === 'User' ? isUserFormValid : isCourierFormValid;
 
 
     const handleUserTypeChange = (type) => {
@@ -101,20 +86,9 @@ export default function SignUpScreen() {
         // Add your OTP logic here
     };
 
-    const updateFormData = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        // Clear error for this field when user starts typing
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: null }));
-        }
-    };
-
     const handleSignUp = async () => {
-        // if (isSubmitting) return;
-        if (!validateForm()) {
-            Alert.alert('Error', 'Please fill in all required fields correctly');
-            return;
-        }
+        if (!isFormValid || isSubmitting) return;
+
         setIsSubmitting(true);
 
         try {
@@ -124,49 +98,45 @@ export default function SignUpScreen() {
                 );
             }
 
-            // Prepare data based on user type
-            const userData = {
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone,
-                otp: formData.otp,
-                password: formData.password,
-                role: formData.role
-            };
+            const result = await signUp()
 
-            if (userType === 'User') {
-                userData.pickUpAddress = formData.pickupAddress;
-                userData.address = formData.deliveryAddress;
-            } else if (userType === 'Courier') {
-                userData.deliveryMethod = formData.deliveryMethod;
-                userData.vehicleModel = formData.vehicleModel;
-                userData.vehiclePlate = formData.vehiclePlate;
-                userData.vehicleColor = formData.vehicleColor;
-                userData.validId = formData.validId;
-                userData.proofOfAddress = formData.proofOfAddress;
-                userData.payoutMethod = formData.payoutMethod;
-                userData.bankName = formData.bankName;
-                userData.accountNumber = formData.accountNumber;
-            }
+            // simulate API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // console.log('Sign up clicked', formData, userData);
+            console.log('Sign up clicked', {
+                userType,
+                name,
+                email,
+                phone,
+                validId,
+                password,
+                bankName,
+                proofOfAddress,
+                vehicleColor,
+                vehicleModel,
+                vehiclePlate,
+                payoutMethod,
+                otp,
+            });
+            // router.replace('/(auth)/login');
+            router.push({
+                pathname: '/(auth)/confirm',
+                params: { userType } // or 'Courier' or 'User'
+            });
 
-            const result = await signUp(userData, userType);
-            console.log('Sign up response', result);
-            if (result.success) {
-                // Navigate to confirmation screen
-                router.push({
-                    pathname: '/(auth)/confirm',
-                    params: { userType }
-                });
-            } else {
-                Alert.alert('Error', result.error || 'Failed to sign up. Please try again.');
-            }
+            // router.replace('/(auth)/verify'); // example
         } catch (error) {
             console.log(error);
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleSocialSignUp = (provider) => {
+        if (Platform.OS === 'ios') {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        }
+        console.log(`Sign up with ${provider}`);
     };
 
     return (
@@ -236,43 +206,40 @@ export default function SignUpScreen() {
                     </View>
 
                     {/* Name Input */}
-                    <View style={[styles.inputContainer, { marginTop: spacing.lg, borderColor: errors.name ? '#FF3B30' : '#E0E0E0' }]}>
+                    <View style={[styles.inputContainer, { marginTop: spacing.lg }]}>
                         <Ionicons name="person-outline" size={20} color="#999" style={styles.inputIcon} />
                         <TextInput
                             style={[styles.input, { fontSize: fontSize.md }]}
                             placeholder="Full Name"
-                            value={formData.name}
-                            onChangeText={(value) => updateFormData('name', value)}
+                            value={name}
+                            onChangeText={setName}
                             placeholderTextColor="#999"
                         />
                     </View>
-                    {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-
 
                     {/* Email Input */}
-                    <View style={[styles.inputContainer, { marginTop: spacing.md, borderColor: errors.email ? '#FF3B30' : '#E0E0E0' }]}>
+                    <View style={[styles.inputContainer, { marginTop: spacing.md }]}>
                         <Ionicons name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
                         <TextInput
                             style={[styles.input, { fontSize: fontSize.md }]}
                             placeholder="Email address"
-                            value={formData.email}
-                            onChangeText={(value) => updateFormData('email', value)}
+                            value={email}
+                            onChangeText={setEmail}
                             keyboardType="email-address"
                             autoCapitalize="none"
                             placeholderTextColor="#999"
                         />
                     </View>
-                    {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
                     {/* Phone Number with OTP */}
                     <View style={[styles.phoneContainer, { marginTop: spacing.md }]}>
-                        <View style={[styles.phoneInputWrapper, { borderColor: errors.phone ? '#FF3B30' : '#E0E0E0' }]}>
+                        <View style={styles.phoneInputWrapper}>
                             <Ionicons name="call-outline" size={20} color="#999" style={styles.inputIcon} />
                             <TextInput
                                 style={[styles.input, { fontSize: fontSize.md }]}
                                 placeholder="Phone number"
-                                value={formData.phone}
-                                onChangeText={(value) => updateFormData('phone', value)}
+                                value={phone}
+                                onChangeText={setPhone}
                                 keyboardType="phone-pad"
                                 placeholderTextColor="#999"
                             />
@@ -280,23 +247,22 @@ export default function SignUpScreen() {
                         <TouchableOpacity
                             style={[
                                 styles.sendOtpButton,
-                                !formData.phone && { opacity: 0.5 },
+                                !phone && { opacity: 0.5 },
                             ]}
-                            disabled={!formData.phone}
+                            disabled={!phone}
                             onPress={handleSendOtp}
                         >
                             <Text style={[styles.sendOtpText, { fontSize: fontSize.sm }]}>Send OTP</Text>
                         </TouchableOpacity>
                     </View>
-                    {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
 
                     {/* OTP Input */}
                     {otpSent && <View style={[styles.otpContainer, { marginTop: spacing.sm }]}>
                         <TextInput
                             style={[styles.otpInput, { fontSize: fontSize.md }]}
                             placeholder="Input otp"
-                            value={formData.otp}
-                            onChangeText={(value) => updateFormData('otp', value)}
+                            value={otp}
+                            onChangeText={setOtp}
                             keyboardType="number-pad"
                             maxLength={6}
                             placeholderTextColor="#999"
@@ -307,16 +273,15 @@ export default function SignUpScreen() {
                             </View>
                         )}
                     </View>}
-                    {errors.otp && <Text style={styles.errorText}>{errors.otp}</Text>}
 
                     {/* Password Input */}
-                    <View style={[styles.inputContainer, { marginTop: spacing.md, borderColor: errors.password ? '#FF3B30' : '#E0E0E0' }]}>
+                    <View style={[styles.inputContainer, { marginTop: spacing.md }]}>
                         <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
                         <TextInput
                             style={[styles.input, { fontSize: fontSize.md }]}
                             placeholder="Password"
-                            value={formData.password}
-                            onChangeText={(value) => updateFormData('password', value)}
+                            value={password}
+                            onChangeText={setPassword}
                             secureTextEntry={!showPassword}
                             placeholderTextColor="#999"
                         />
@@ -328,8 +293,6 @@ export default function SignUpScreen() {
                             />
                         </TouchableOpacity>
                     </View>
-                    {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-
                     {/* Conditional Fields based on User Type */}
                     {userType === 'User' ? (
                         // USER FIELDS
@@ -345,8 +308,8 @@ export default function SignUpScreen() {
                                 <TextInput
                                     style={[styles.input, { fontSize: fontSize.md }]}
                                     placeholder="Add default pickup address"
-                                    value={formData.pickupAddress}
-                                    onChangeText={(value) => updateFormData('pickupAddress', value)}
+                                    value={pickupAddress}
+                                    onChangeText={setPickupAddress}
                                     placeholderTextColor="#999"
                                 />
                             </View>
@@ -356,8 +319,8 @@ export default function SignUpScreen() {
                                 <TextInput
                                     style={[styles.input, { fontSize: fontSize.md }]}
                                     placeholder="Add delivery address"
-                                    value={formData.deliveryAddress}
-                                    onChangeText={(value) => updateFormData('deliveryAddress', value)}
+                                    value={deliveryAddress}
+                                    onChangeText={setDeliveryAddress}
                                     placeholderTextColor="#999"
                                 />
                             </View>
@@ -373,8 +336,8 @@ export default function SignUpScreen() {
 
                             {/* Delivery Method Dropdown */}
                             <SelectField
-                                value={formData.deliveryMethod}
-                                onChange={(value) => updateFormData('deliveryMethod', value)}
+                                value={deliveryMethod}
+                                onChange={setDeliveryMethod}
                                 options={['Bicycle', 'Bike', 'Car', 'Bus']}
                                 placeholder="Select delivery method"
                                 icon="bicycle-outline"
@@ -388,8 +351,8 @@ export default function SignUpScreen() {
                                 <TextInput
                                     style={[styles.input, { fontSize: fontSize.md, paddingLeft: spacing.md }]}
                                     placeholder="Vehicle model"
-                                    value={formData.vehicleModel}
-                                    onChangeText={(value) => updateFormData('vehicleModel', value)}
+                                    value={vehicleModel}
+                                    onChangeText={setVehicleModel}
                                     placeholderTextColor="#999"
                                 />
                             </View>
@@ -399,8 +362,8 @@ export default function SignUpScreen() {
                                 <TextInput
                                     style={[styles.input, { fontSize: fontSize.md, paddingLeft: spacing.md }]}
                                     placeholder="Vehicle plate number"
-                                    value={formData.vehiclePlate}
-                                    onChangeText={(value) => updateFormData('vehiclePlate', value)}
+                                    value={vehiclePlate}
+                                    onChangeText={setVehiclePlate}
                                     placeholderTextColor="#999"
                                 />
                             </View>
@@ -410,8 +373,8 @@ export default function SignUpScreen() {
                                 <TextInput
                                     style={[styles.input, { fontSize: fontSize.md, paddingLeft: spacing.md }]}
                                     placeholder='Color'
-                                    value={formData.vehicleColor}
-                                    onChangeText={(value) => updateFormData('vehicleColor', value)}
+                                    value={vehicleColor}
+                                    onChangeText={setvehicleColor}
                                     placeholderTextColor="#999"
                                 />
                             </View>
@@ -419,8 +382,8 @@ export default function SignUpScreen() {
                             {/* Valid ID Upload */}
 
                             <ImageUploadField
-                                value={formData.validId}
-                                onChange={(value) => updateFormData('validId', value)}
+                                value={validId}
+                                onChange={setValidId}
                                 placeholder="Valid ID or License"
                                 styles={styles}
                                 fontSize={fontSize.md}
@@ -429,8 +392,8 @@ export default function SignUpScreen() {
 
                             {/* Proof of Address Upload */}
                             <ImageUploadField
-                                value={formData.proofOfAddress}
-                                onChange={(value) => updateFormData('proofOfAddress', value)}
+                                value={proofOfAddress}
+                                onChange={setProofOfAddress}
                                 placeholder="Proof of address"
                                 styles={styles}
                                 fontSize={fontSize.md}
@@ -446,8 +409,8 @@ export default function SignUpScreen() {
 
                             {/* Payout Method Dropdown */}
                             <SelectField
-                                value={formData.payoutMethod}
-                                onChange={(value) => updateFormData('payoutMethod', value)}
+                                value={payoutMethod}
+                                onChange={setPayoutMethod}
                                 options={['Bank Transfer', 'Card']}
                                 placeholder="Add Payout method"
                                 icon=""
@@ -458,8 +421,8 @@ export default function SignUpScreen() {
 
                             {/* Bank Name Dropdown */}
                             <SelectField
-                                value={formData.bankName}
-                                onChange={(value) => updateFormData('bankName', value)}
+                                value={bankName}
+                                onChange={setBankName}
                                 options={['First Bank', 'UBA', 'ABC Bank']}
                                 placeholder="Bank Name"
                                 icon=""
@@ -472,8 +435,8 @@ export default function SignUpScreen() {
                                 <TextInput
                                     style={[styles.input, { fontSize: fontSize.md, paddingLeft: spacing.md }]}
                                     placeholder="Account number"
-                                    value={formData.accountNumber}
-                                    onChangeText={(value) => updateFormData('accountNumber', value)}
+                                    value={accountNumber}
+                                    onChangeText={setAccountNumber}
                                     keyboardType="number-pad"
                                     placeholderTextColor="#999"
                                 />
@@ -484,11 +447,11 @@ export default function SignUpScreen() {
                     {/* Sign Up Button */}
                     <TouchableOpacity
                         style={[styles.signupButton, { marginTop: spacing.xl, height: scale(56) },
-                        isSubmitting && styles.signupButtonDisabled,
+                        (!isFormValid || isSubmitting) && styles.signupButtonDisabled,
                         ]}
                         onPress={handleSignUp}
                         activeOpacity={0.8}
-                        disabled={isSubmitting}
+                        disabled={!isFormValid || isSubmitting}
                     >
                         {isSubmitting ? (
                             <ActivityIndicator color="#fff" />
@@ -498,6 +461,28 @@ export default function SignUpScreen() {
                             </Text>
                         )}
                     </TouchableOpacity>
+
+                    {/* Apple Sign Up */}
+                    {/* <TouchableOpacity
+                        style={[styles.appleButton, { marginTop: spacing.md, height: scale(56) }]}
+                        onPress={() => handleSocialSignUp('Apple')}
+                    >
+                        <Ionicons name="logo-apple" size={24} color="#fff" />
+                        <Text style={[styles.appleButtonText, { fontSize: fontSize.md }]}>
+                            Sign up using Apple
+                        </Text>
+                    </TouchableOpacity> */}
+
+                    {/* Google Sign Up */}
+                    {/* <TouchableOpacity
+                        style={[styles.googleButton, { marginTop: spacing.md, height: scale(56) }]}
+                        onPress={() => handleSocialSignUp('Google')}
+                    >
+                        <Ionicons name="logo-google" size={24} color="#DB4437" />
+                        <Text style={[styles.googleButtonText, { fontSize: fontSize.md }]}>
+                            Sign up using Google
+                        </Text>
+                    </TouchableOpacity> */}
 
                     {/* Already Member */}
                     <TouchableOpacity
@@ -632,12 +617,6 @@ const styles = StyleSheet.create({
     },
     otpVerifyIcon: {
         marginLeft: 8,
-    },
-    errorText: {
-        color: '#FF3B30',
-        fontSize: 12,
-        marginTop: 4,
-        marginLeft: 16,
     },
     skipContainer: {
         alignItems: 'flex-end',

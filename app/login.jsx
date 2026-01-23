@@ -1,18 +1,16 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Platform, KeyboardAvoidingView, StatusBar, ActivityIndicator, Alert } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Platform, KeyboardAvoidingView, StatusBar, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useResponsive } from '@/hooks/useResponsiveness';
-import { useAuth } from '@/hooks/useAuth';
+import { useResponsive } from '@/hooks/use-responsiveness';
 
 
 export default function LoginScreen() {
     const router = useRouter();
     const { scale, spacing, fontSize, isTablet } = useResponsive();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { login } = useAuth()
 
 
 
@@ -20,48 +18,21 @@ export default function LoginScreen() {
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [errors, setErrors] = useState({});
 
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!emailOrPhone.trim()) {
-            newErrors.emailOrPhone = "Email or Phone number is required.";
-        }
-
-        if (!password.trim()) {
-            newErrors.password = "Password is required."
-        }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    }
+    const isFormValid = emailOrPhone && password;
 
     const handleLogin = async () => {
-        // if (!isFormValid || isSubmitting) return;
-        if (!validateForm()) {
-            Alert.alert('Error', 'Please fill in all required fields.');
-            return;
-        }
+        if (!isFormValid || isSubmitting) return;
         setIsSubmitting(true);
 
         try {
             if (Platform.OS === 'ios') {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             }
-
-            const result = await login(emailOrPhone, password)
-
-            // await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // console.log('Logged in', { emailOrPhone, password });
-            console.log('Log in response', result);
-
-            if (result.success) {
-
-                router.push('/(tabs)/')
-            } else {
-                Alert.alert('Error', result.error || 'Failed to login. Please try again.')
-            }
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Handle log in logic
+            console.log('Logged in', { emailOrPhone, password });
+            router.push('/(tabs)/')
 
         } catch (error) {
             console.log(error);
@@ -100,7 +71,7 @@ export default function LoginScreen() {
 
 
                     {/* Email or Phone Input */}
-                    <View style={[styles.inputContainer, { marginTop: spacing.lg, borderColor: errors.emailOrPhone ? '#FF3B30' : '#E0E0E0' }]}>
+                    <View style={[styles.inputContainer, { marginTop: spacing.lg }]}>
                         <Ionicons name="person-outline" size={20} color="#999" style={styles.inputIcon} />
                         <TextInput
                             style={[styles.input, { fontSize: fontSize.md }]}
@@ -110,10 +81,9 @@ export default function LoginScreen() {
                             placeholderTextColor="#999"
                         />
                     </View>
-                    {errors.emailOrPhone && <Text style={styles.errorText}>{errors.emailOrPhone}</Text>}
 
                     {/* Password Input */}
-                    <View style={[styles.inputContainer, { marginTop: spacing.md, borderColor: errors.password ? '#FF3B30' : '#E0E0E0' }]}>
+                    <View style={[styles.inputContainer, { marginTop: spacing.md }]}>
                         <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
                         <TextInput
                             style={[styles.input, { fontSize: fontSize.md }]}
@@ -131,7 +101,6 @@ export default function LoginScreen() {
                             />
                         </TouchableOpacity>
                     </View>
-                    {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
                     <View style={[styles.forgotPasswordContainer, { marginTop: spacing.xs }]}>
                         <TouchableOpacity>
@@ -142,11 +111,11 @@ export default function LoginScreen() {
                     {/* Log in Button */}
                     <TouchableOpacity
                         style={[styles.loginButton, { marginTop: spacing.xl, height: scale(56) },
-                        isSubmitting && styles.loginButtonDisabled,
+                        (!isFormValid || isSubmitting) && styles.loginButtonDisabled,
                         ]}
                         onPress={handleLogin}
                         activeOpacity={0.8}
-                        disabled={isSubmitting}
+                        disabled={!isFormValid || isSubmitting}
                     >
                         {isSubmitting ? (
                             <ActivityIndicator color="#fff" />
@@ -251,12 +220,6 @@ const styles = StyleSheet.create({
     loginButtonDisabled: {
         backgroundColor: '#F17500',
         opacity: 0.5,
-    },
-    errorText: {
-        color: '#FF3B30',
-        fontSize: 12,
-        marginTop: 4,
-        marginLeft: 16,
     },
     signupLink: {
         alignItems: 'center',
