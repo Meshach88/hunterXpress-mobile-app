@@ -19,6 +19,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useResponsive } from '@/hooks/use-responsiveness';
 import HexagonalGrid from '@/components/dashboard/HexagonalGrid';
 import TransactionList from '@/components/dashboard/TransactionList';
+import LogisticsCard from '@/components/dashboard/LogisticCard';
 
 
 export default function DashboardScreen() {
@@ -57,13 +58,12 @@ export default function DashboardScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['top']}
     >
-      {/* <ScrollView
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         bounces={true}
-      > */}
+      >
         <ImageBackground source={require('@/assets/images/dashboard-bg.png')}
           style={styles.background}
         >
@@ -101,7 +101,22 @@ export default function DashboardScreen() {
             </View>
 
             {/* Hexagonal Grid */}
-            <HexagonalGrid router={router} />
+            <ImageBackground
+              source={require('@/assets/images/send_box.png')}
+              style={styles.cardContainer}
+              resizeMode='stretch'
+            >
+              <View style={styles.cardContent}>
+                <Text style={styles.title}>SEND</Text>
+              </View>
+            </ImageBackground>
+            {/* <HexagonalGrid router={router} /> */}
+
+            {/* <LogisticsCard
+              title="Package #12345"
+              subtitle="From Lagos to Abuja - Delivery in 2 days"
+              bgColor="#4ade80"
+            /> */}
 
             {/* Recent Transactions */}
             <View style={[styles.transactionsContainer, { paddingHorizontal: scale(20) }]}>
@@ -109,8 +124,8 @@ export default function DashboardScreen() {
             </View>
           </View>
         </ImageBackground>
-      {/* </ScrollView> */}
-    </SafeAreaView>
+      </ScrollView >
+    </SafeAreaView >
   );
 }
 
@@ -125,6 +140,31 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 30
+  },
+  cardContainer: {
+    marginVertical: 20,
+    alignSelf: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 100
+  },
+  cardContent: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    backgroundColor: "black",
+    marginTop: 40,
+    marginLeft: 60
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#111",
   },
   content: {
     flex: 1,

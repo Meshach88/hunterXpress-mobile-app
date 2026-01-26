@@ -116,14 +116,14 @@ export default function LocationsScreen() {
 
     if (isLoading) {
         return (
-            <SafeAreaView style={[styles.container, styles.centerContent]} edges={['top']}>
+            <SafeAreaView style={[styles.container, styles.centerContent]}>
                 <ActivityIndicator size="large" color="#8BC34A" />
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={[styles.header, { paddingHorizontal: spacing.lg, paddingTop: spacing.xl }]}>
                 <TouchableOpacity

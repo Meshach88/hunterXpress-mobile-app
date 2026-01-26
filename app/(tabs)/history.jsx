@@ -152,7 +152,7 @@ export default function DeliveryHistoryScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={[styles.header, { paddingHorizontal: spacing.lg, paddingTop: spacing.xl }]}>
         <TouchableOpacity
