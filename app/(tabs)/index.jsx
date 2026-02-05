@@ -23,12 +23,7 @@ export default function Dashboard() {
   const userType = 'User'
 
   return <>
-    {userType === 'User' ?
-      <UserDashboardScreen />
-      :
-      <View><Text>Courier Dashboard</Text></View>
-      // <CourierDashboardScreen />
-    }
+    <UserDashboardScreen />
   </>
 
 }

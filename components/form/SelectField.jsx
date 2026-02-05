@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
     },
     dropdownText: {
         fontSize: 16,
-        color: '#111827'
+        color: '#111827',
+        fontFamily: 'Sora-Regular'
     },
 })
 

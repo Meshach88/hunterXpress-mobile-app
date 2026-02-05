@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -19,12 +18,14 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
-// import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useResponsive } from '@/hooks/use-responsiveness';
+import api from '@/api/api';
+
 
 export default function SendItemScreen() {
   const router = useRouter();
-//   const { user } = useAuth();
+  const { user } = useAuth();
   const { scale, spacing, fontSize, isTablet } = useResponsive();
 
   const [formData, setFormData] = useState({
@@ -76,7 +77,7 @@ export default function SendItemScreen() {
         const locationString = `${address[0].street || ''}, ${address[0].city || ''}, ${address[0].region || ''}`.trim();
         setFormData(prev => ({
           ...prev,
-          senderLocation: locationString,
+          receiverLocation: locationString,
         }));
 
         if (Platform.OS === 'ios') {
@@ -94,7 +95,7 @@ export default function SendItemScreen() {
   const pickImage = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
+
       if (status !== 'granted') {
         Alert.alert(
           'Permission Required',
@@ -129,7 +130,7 @@ export default function SendItemScreen() {
   const takePhoto = async () => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      
+
       if (status !== 'granted') {
         Alert.alert(
           'Permission Required',
@@ -225,39 +226,45 @@ export default function SendItemScreen() {
 
     try {
       // Prepare form data for API
-      const orderData = new FormData();
-      orderData.append('senderLocation', formData.senderLocation);
-      orderData.append('receiverLocation', formData.receiverLocation);
-      orderData.append('description', formData.description);
-    //   orderData.append('userId', user?.id);
+      // const orderData = new FormData();
+      // orderData.append('senderLocation', formData.senderLocation);
+      // orderData.append('receiverLocation', formData.receiverLocation);
+      // orderData.append('description', formData.description);
+      //   orderData.append('userId', user?.id);
 
-      if (formData.photo) {
-        orderData.append('photo', {
-          uri: formData.photo.uri,
-          type: 'image/jpeg',
-          name: 'item-photo.jpg',
-        });
+      // if (formData.photo) {
+      //   orderData.append('photo', {
+      //     uri: formData.photo.uri,
+      //     type: 'image/jpeg',
+      //     name: 'item-photo.jpg',
+      //   });
+      // }
+
+      const orderData = {
+        pickup_address: formData.senderLocation,
+        dropoff_address: formData.receiverLocation,
+        package_details: JSON.stringify({ description: formData.description }),
+        price: 2000,
+        distance_km: 10
       }
 
-      // Replace with your actual API endpoint
-      const response = await fetch('https://your-api.com/api/orders', {
-        method: 'POST',
-        body: orderData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post('/deliveries', orderData);
 
-      const data = await response.json();
+      const data = await response.data;
 
-      if (response.ok) {
+      console.log(data)
+
+      if (data.success) {
         Alert.alert(
           'Success',
           'Your order has been placed successfully!',
           [
             {
               text: 'OK',
-              onPress: () => router.back(),
+              onPress: () => router.push({
+                pathname: '/(customer)/payment',
+                params: { order: JSON.stringify(data) }
+              }),
             },
           ]
         );
@@ -299,32 +306,32 @@ export default function SendItemScreen() {
           </TouchableOpacity>
 
           {/* Title */}
-          <Text style={[styles.title, { 
+          <Text style={[styles.title, {
             fontSize: isTablet ? fontSize.xxxl * 1.3 : fontSize.xxxl * 1.2,
             marginTop: spacing.lg,
           }]}>
             Receive Item
           </Text>
 
-          {/* Sender Location */}
+          {/* Receiver's Location */}
           <View style={{ marginTop: spacing.xl }}>
             <TextInput
               style={[
                 styles.input,
-                { 
+                {
                   fontSize: fontSize.md,
-                  borderColor: errors.senderLocation ? '#FF3B30' : '#E0E0E0',
+                  borderColor: errors.receiverLocation ? '#FF3B30' : '#E0E0E0',
                 }
               ]}
               placeholder="Your location:"
               placeholderTextColor="#999"
-              value={formData.senderLocation}
-              onChangeText={(value) => updateFormData('senderLocation', value)}
+              value={formData.receiverLocation}
+              onChangeText={(value) => updateFormData('receiverLocation', value)}
               editable={!isSubmitting}
               multiline
             />
-            {errors.senderLocation && (
-              <Text style={styles.errorText}>{errors.senderLocation}</Text>
+            {errors.receiverLocation && (
+              <Text style={styles.errorText}>{errors.receiverLocation}</Text>
             )}
 
             {/* Use Current Location */}
@@ -346,25 +353,25 @@ export default function SendItemScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Receiver Location */}
+          {/* Item Location */}
           <View style={{ marginTop: spacing.lg }}>
             <TextInput
               style={[
                 styles.input,
-                { 
+                {
                   fontSize: fontSize.md,
-                  borderColor: errors.receiverLocation ? '#FF3B30' : '#E0E0E0',
+                  borderColor: errors.senderLocation ? '#FF3B30' : '#E0E0E0',
                 }
               ]}
-              placeholder="Receiver's location:"
+              placeholder="Item's location:"
               placeholderTextColor="#999"
-              value={formData.receiverLocation}
-              onChangeText={(value) => updateFormData('receiverLocation', value)}
+              value={formData.senderLocation}
+              onChangeText={(value) => updateFormData('senderLocation', value)}
               editable={!isSubmitting}
               multiline
             />
             {errors.receiverLocation && (
-              <Text style={styles.errorText}>{errors.receiverLocation}</Text>
+              <Text style={styles.errorText}>{errors.senderLocation}</Text>
             )}
           </View>
 
@@ -374,7 +381,7 @@ export default function SendItemScreen() {
               style={[
                 styles.input,
                 styles.descriptionInput,
-                { 
+                {
                   fontSize: fontSize.md,
                   borderColor: errors.description ? '#FF3B30' : '#E0E0E0',
                 }
@@ -402,7 +409,7 @@ export default function SendItemScreen() {
             <TouchableOpacity
               style={[
                 styles.photoContainer,
-                { 
+                {
                   height: scale(150),
                   marginTop: spacing.sm,
                 }
@@ -428,10 +435,10 @@ export default function SendItemScreen() {
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <Ionicons name="image-outline" size={scale(60)} color="#CCC" />
-                  <Ionicons 
-                    name="add-circle" 
-                    size={scale(32)} 
-                    color="#999" 
+                  <Ionicons
+                    name="add-circle"
+                    size={scale(32)}
+                    color="#999"
                     style={styles.addIcon}
                   />
                 </View>

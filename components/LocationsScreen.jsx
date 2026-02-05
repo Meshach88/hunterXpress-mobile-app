@@ -32,16 +32,18 @@ export default function LocationsScreen() {
     const fetchLocations = async () => {
         try {
             setIsLoading(true);
+            setLocations(getMockLocations());
 
-            // Replace with your actual API endpoint
-            const response = await fetch(`https://your-api.com/api/deliveries/locations/${user?.id}`);
-            const data = await response.json();
 
-            if (response.ok) {
-                setLocations(data.locations || getMockLocations());
-            } else {
-                setLocations(getMockLocations());
-            }
+            // // Replace with your actual API endpoint
+            // const response = await fetch(`https://your-api.com/api/deliveries/locations/${user?.id}`);
+            // const data = await response.json();
+
+            // if (response.ok) {
+            //     setLocations(data.locations || getMockLocations());
+            // } else {
+            //     setLocations(getMockLocations());
+            // }
         } catch (error) {
             console.error('Error fetching locations:', error);
             setLocations(getMockLocations());
@@ -52,7 +54,7 @@ export default function LocationsScreen() {
 
     const onRefresh = async () => {
         setIsRefreshing(true);
-        await fetchLocations();
+        // await fetchLocations();
         setIsRefreshing(false);
     };
 
@@ -254,7 +256,7 @@ const styles = StyleSheet.create({
         fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
     },
     scrollContent: {
-        paddingBottom: 100,
+        paddingBottom: 50,
     },
     emptyContainer: {
         flex: 1,

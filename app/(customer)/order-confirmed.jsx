@@ -11,15 +11,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useResponsive } from '@/hooks/useResponsiveness';
+import { useResponsive } from '@/hooks/use-responsiveness';
 
-export default function ConfirmationScreen() {
+export default function OrderConfirmationScreen() {
     const router = useRouter();
-    const params = useLocalSearchParams();
+    // const params = useLocalSearchParams();
     const { scale, spacing, fontSize, isTablet } = useResponsive();
 
     // Get user type from params (default to 'Sender')
-    const userType = params?.userType || 'User';
+    // const userType = params?.userType || 'User';
 
     // Animation values
     const scaleAnim = new Animated.Value(0);
@@ -47,12 +47,12 @@ export default function ConfirmationScreen() {
         ]).start();
     }, []);
 
-    const handleConfirm = () => {
+    const handleTrackOrder = () => {
         if (Platform.OS === 'ios') {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }
         // Navigate to main app or dashboard
-        router.replace('/(auth)/login');
+        router.replace('/(customer)/track-courier');
     };
 
     const handleBack = () => {
@@ -133,20 +133,11 @@ export default function ConfirmationScreen() {
                             marginBottom: spacing.md,
                         }
                     ]}>
-                        You're good to go!
-                    </Text>
-
-                    <Text style={[
-                        styles.subtitle,
-                        {
-                            fontSize: isTablet ? fontSize.lg : fontSize.md,
-                        }
-                    ]}>
-                        Confirm you're signing up as a {userType}
+                        Order Confirmed!
                     </Text>
                 </Animated.View>
 
-                {/* Confirm Button */}
+                {/* Track Order Button */}
                 <Animated.View
                     style={[
                         styles.buttonContainer,
@@ -164,14 +155,14 @@ export default function ConfirmationScreen() {
                                 marginTop: spacing.xl * 2,
                             }
                         ]}
-                        onPress={handleConfirm}
+                        onPress={handleTrackOrder}
                         activeOpacity={0.8}
                     >
                         <Text style={[
                             styles.confirmButtonText,
                             { fontSize: fontSize.lg }
                         ]}>
-                            Confirm
+                            Track Order
                         </Text>
                     </TouchableOpacity>
                 </Animated.View>
@@ -235,7 +226,7 @@ const styles = StyleSheet.create({
     title: {
         color: '#000',
         textAlign: 'center',
-        fontFamily: 'Sora-Bold',
+        fontFamily: 'Sora-SemiBold',
     },
     subtitle: {
         color: '#666',

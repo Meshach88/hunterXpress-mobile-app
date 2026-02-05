@@ -10,11 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.meshach88.hunter",
-      "icon":{
-        "dark": "./assets/icons/ios-light.png",
-        "light": "./assets/icons/ios-light.png"
-      }
+      "bundleIdentifier": "com.meshach88.hunter"
+      // "icon":{
+      //   "dark": "./assets/icons/ios-light.png",
+      //   "light": "./assets/icons/ios-light.png"
+      // }
     },
     "android": {
       "adaptiveIcon": {

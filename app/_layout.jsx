@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { useAuth } from '@/hooks/useAuth';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -68,36 +69,32 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  
-  // const [fontsLoaded] = useFonts({
-  //   Sora_100Thin,
-  //   Sora_200ExtraLight,
-  //   Sora_300Light,
-  //   Sora_400Regular,
-  //   Sora_500Medium,
-  //   Sora_600SemiBold,
-  //   Sora_700Bold,
-  //   Sora_800ExtraBold,
-  // });
 
-  // useEffect(() => {
-  //   if (fontsLoaded) {
-  //     SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
+  const [fontsLoaded, fontError] = useFonts({
+    'Sora-Regular': require('../assets/fonts/Sora-Regular.ttf'),
+    'Sora-Medium': require('../assets/fonts/Sora-Medium.ttf'),
+    'Sora-SemiBold': require('../assets/fonts/Sora-SemiBold.ttf'),
+    'Sora-Bold': require('../assets/fonts/Sora-Bold.ttf'),
+    'Montserrat-Bold': require('../assets/fonts/Montserrat-Bold.ttf'),
+    'Montserrat-ExtraBold': require('../assets/fonts/Montserrat-ExtraBold.ttf'),
+  });
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
 
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
-
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
   return (
     <SafeAreaProvider>
-            <ThemeProvider>
-                <AuthProvider>
-                    <StatusBar style="light" />
-                    <RootLayoutNav />
-                </AuthProvider>
-            </ThemeProvider>
-        </SafeAreaProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <StatusBar style="light" />
+          <RootLayoutNav />
+        </AuthProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

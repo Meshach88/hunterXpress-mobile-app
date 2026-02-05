@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useAuth } from '@/hooks/useAuth';
 import { useResponsive } from '@/hooks/use-responsiveness';
+import api from '@/api/api';
 
 export default function DeliveryHistoryScreen() {
   const router = useRouter();
@@ -35,10 +36,10 @@ export default function DeliveryHistoryScreen() {
       setIsLoading(true);
       
       // Replace with your actual API endpoint
-      const response = await fetch(`https://your-api.com/api/deliveries/history/${user?.id}`);
-      const data = await response.json();
+      const response = await api.get('/deliveries/my-orders');
+      const data = await response.data;
       
-      if (response.ok) {
+      if (data.success) {
         setDeliveries(data.deliveries || getMockDeliveries());
       } else {
         setDeliveries(getMockDeliveries());

@@ -1,12 +1,14 @@
-// app/(tabs)/_layout.js
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import * as Haptics from 'expo-haptics';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function TabLayout() {
   const { theme } = useTheme();
+  const params = useLocalSearchParams()
+  const userType = params?.userType || 'User'
 
   const handleTabPress = () => {
     if (Platform.OS === 'ios') {
@@ -26,9 +28,8 @@ export default function TabLayout() {
           borderTopWidth: 0,
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
-          elevation: 0,
-          height: Platform.OS === 'ios' ? 88 : 60,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 2,
+          height: Platform.OS === 'ios' ? 88 : 80,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
           // marginTop: 10,
           paddingTop: 8,
           ...Platform.select({
@@ -45,8 +46,7 @@ export default function TabLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '600',
-          fontFamily: 'Inter-SemiBold',
+          fontFamily: 'Sora-Regular',
         },
         tabBarIconStyle: {
           marginBottom: -4,
@@ -78,11 +78,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="locations"
+        name= "locations-earnings"
         options={{
-          title: 'Locations',
+          title: userType == 'User' ? 'Locations' : 'Earnings',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="location" size={size} color={color} />
+            <Ionicons name={userType == 'User' ? "location" : 'wallet'} size={size} color={color} />
           ),
         }}
         listeners={{

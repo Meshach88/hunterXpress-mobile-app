@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { useResponsive } from '@/hooks/use-responsiveness';
 
@@ -53,7 +53,7 @@ export default function CourierDashboardScreen() {
       // Replace with your actual API endpoint
       const response = await fetch(`https://your-api.com/api/courier/dashboard/${user?.id}`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setDashboardData(data);
         setIsOnline(data.isOnline || false);
@@ -101,28 +101,32 @@ export default function CourierDashboardScreen() {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    router.push('/notifications');
+    console.log('Notifications clicked')
+    // router.push('/notifications');
   };
 
   const handleIncomingOrders = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    router.push('/incoming-orders');
+    console.log('incoming orders clicked')
+    // router.push('/incoming-orders');
   };
 
   const handleActiveDelivery = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    router.push(`/delivery/${dashboardData.activeDelivery.id}`);
+    console.log('Active delivery clicked')
+    // router.push(`/delivery/${dashboardData.activeDelivery.id}`);
   };
 
   const handleEarnings = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    router.push('/earnings');
+    console.log('earnings clicked')
+    // router.push('/earnings');
   };
 
   const formatTime = (hours, minutes) => {
@@ -178,17 +182,17 @@ export default function CourierDashboardScreen() {
             <Switch
               value={isOnline}
               onValueChange={toggleOnlineStatus}
-              trackColor={{ false: '#D1D1D1', true: '#8BC34A' }}
+              trackColor={{ false: '#929292', true: '#74BF22' }}
               thumbColor="#fff"
               ios_backgroundColor="#D1D1D1"
               style={Platform.OS === 'ios' ? { transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] } : {}}
             />
-            <Text style={[styles.onlineText, { fontSize: fontSize.lg }]}>
-              ONLINE
+            <Text style={[styles.onlineText, { fontSize: fontSize.xl }]}>
+              {isOnline ? 'ONLINE' : 'OFFLINE'}
             </Text>
           </View>
           <Text style={[styles.onlineSubtext, { fontSize: fontSize.xs, marginTop: spacing.xs }]}>
-            You're active and ready to receive delivery requests.
+            {isOnline ? "You're active and ready to receive delivery requests." : "You’re offline and not ready to receive delivery requests."}
           </Text>
         </View>
 
@@ -198,13 +202,13 @@ export default function CourierDashboardScreen() {
         </Text>
 
         {/* Dashboard Cards */}
-        <View style={{ marginTop: spacing.xl }}>
+        <View style={{ marginTop: spacing.lg }}>
           {/* Incoming Orders */}
           <TouchableOpacity
             style={[
               styles.card,
               styles.incomingCard,
-              { 
+              {
                 height: scale(120),
                 marginBottom: spacing.md,
               }
@@ -213,16 +217,21 @@ export default function CourierDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, { fontSize: isTablet ? fontSize.xxl : fontSize.xl }]}>
+              <Text style={[styles.cardTitle, { fontSize: isTablet ? fontSize.xxxl : fontSize.xxl }]}>
                 Incoming
               </Text>
-              <Text style={[styles.cardSubtitle, { fontSize: isTablet ? fontSize.xl : fontSize.lg }]}>
+              <Text style={[styles.cardSubtitle, { fontSize: isTablet ? fontSize.xxxl : fontSize.xxl }]}>
                 ({dashboardData.incomingCount})
               </Text>
             </View>
-            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(80) }]}>
+            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(120) }]}>
               <View style={styles.cardIconCircle}>
-                <Ionicons name="cube-outline" size={scale(40)} color="#8BC34A" />
+                {/* <Ionicons name="cube-outline" size={scale(40)} color="#fff" /> */}
+                <Image 
+                source={require('@/assets/images/truck-green-outline.png')}
+                resizeMode='contain'
+                style = {{width: scale(40)}}
+                />
               </View>
             </View>
           </TouchableOpacity>
@@ -232,7 +241,7 @@ export default function CourierDashboardScreen() {
             style={[
               styles.card,
               styles.activeCard,
-              { 
+              {
                 height: scale(120),
                 marginBottom: spacing.md,
               }
@@ -241,19 +250,23 @@ export default function CourierDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, { fontSize: isTablet ? fontSize.xxl : fontSize.xl }]}>
+              <Text style={[styles.cardTitle, { fontSize: isTablet ? fontSize.xxxl : fontSize.xxl }]}>
                 Actives
               </Text>
-              <Text style={[styles.cardDescription, { fontSize: fontSize.sm, marginTop: spacing.xs }]}>
+              <Text style={[styles.cardDescription, { fontSize: fontSize.lg, marginTop: spacing.xs }]}>
                 Delivery #{dashboardData.activeDelivery.id}:
               </Text>
-              <Text style={[styles.cardDescription, { fontSize: fontSize.sm }]}>
+              <Text style={[styles.cardDescription, { fontSize: fontSize.lg }]}>
                 {dashboardData.activeDelivery.status}
               </Text>
             </View>
-            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(80) }]}>
+            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(120) }]}>
               <View style={styles.cardIconCircle}>
-                <Ionicons name="bicycle-outline" size={scale(40)} color="#FF8C00" />
+                {/* <Ionicons name="bicycle-outline" size={scale(40)} color="#FF8C00" /> */}
+                <Image source={require('@/assets/images/truck-orange.png')}
+                resizeMode='contain'
+                style={{width: scale(40)}}
+                />
               </View>
             </View>
           </TouchableOpacity>
@@ -263,7 +276,7 @@ export default function CourierDashboardScreen() {
             style={[
               styles.card,
               styles.earningsCard,
-              { 
+              {
                 height: scale(120),
                 marginBottom: spacing.md,
               }
@@ -272,16 +285,20 @@ export default function CourierDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, { fontSize: isTablet ? fontSize.xxl : fontSize.xl }]}>
+              <Text style={[styles.cardTitle, { fontSize: isTablet ? fontSize.xxxl : fontSize.xxl }]}>
                 Earnings
               </Text>
-              <Text style={[styles.earningsAmount, { fontSize: isTablet ? fontSize.xl : fontSize.lg, marginTop: spacing.xs }]}>
+              <Text style={[styles.earningsAmount, { fontSize: isTablet ? fontSize.xxl : fontSize.xl, marginTop: spacing.xs }]}>
                 ${dashboardData.earnings.toFixed(2)}
               </Text>
             </View>
-            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(80) }]}>
+            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(120) }]}>
               <View style={styles.cardIconCircle}>
                 <Ionicons name="cash-outline" size={scale(40)} color="#000" />
+                {/* <Image source={require('@/assets/images/earnings.png')}
+                resizeMode='contain'
+                style={{width: scale(40)}}
+                /> */}
               </View>
             </View>
           </TouchableOpacity>
@@ -291,23 +308,27 @@ export default function CourierDashboardScreen() {
             style={[
               styles.card,
               styles.timeCard,
-              { 
+              {
                 height: scale(120),
                 marginBottom: spacing.xl,
               }
             ]}
           >
             <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, styles.timeTitle, { fontSize: isTablet ? fontSize.xxl : fontSize.xl }]}>
+              <Text style={[styles.cardTitle, styles.timeTitle, { fontSize: isTablet ? fontSize.xxxl : fontSize.xxl }]}>
                 Time Online
               </Text>
-              <Text style={[styles.timeAmount, { fontSize: fontSize.lg, marginTop: spacing.xs }]}>
+              <Text style={[styles.timeAmount, { fontSize: fontSize.xl, marginTop: spacing.xs }]}>
                 {formatTime(dashboardData.timeOnline.hours, dashboardData.timeOnline.minutes)}
               </Text>
             </View>
-            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(80) }]}>
+            <View style={[styles.cardIconContainer, { width: scale(80), height: scale(120) }]}>
               <View style={styles.cardIconCircle}>
-                <Ionicons name="time-outline" size={scale(40)} color="#666" />
+                <Ionicons name="time-outline" size={scale(40)} color="#00" />
+                {/* <Image source={require('@/assets/images/time.png')}
+                resizeMode='contain'
+                style = {{width: scale(40)}}
+                /> */}
               </View>
             </View>
           </View>
@@ -327,7 +348,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 10,
   },
   header: {
     flexDirection: 'row',
@@ -347,13 +368,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   greeting: {
-    fontWeight: '700',
     color: '#000',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Bold',
   },
   subtitle: {
     color: '#666',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
     marginTop: 2,
   },
   notificationButton: {
@@ -389,22 +409,21 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   onlineText: {
-    fontWeight: '700',
     color: '#000',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-SemiBold',
   },
   onlineSubtext: {
     color: '#666',
     textAlign: 'center',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   address: {
     color: '#000',
     textAlign: 'center',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   card: {
-    borderRadius: 20,
+    borderTopRightRadius: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -418,7 +437,7 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
       },
       android: {
-        elevation: 3,
+        elevation: 5,
       },
     }),
   },
@@ -426,29 +445,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontWeight: '700',
     color: '#fff',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Bold',
   },
   cardSubtitle: {
-    fontWeight: '700',
     color: '#fff',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
     marginTop: 4,
   },
   cardDescription: {
     color: '#fff',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   earningsAmount: {
-    fontWeight: '700',
     color: '#fff',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   timeAmount: {
-    fontWeight: '600',
     color: '#000',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   timeTitle: {
     color: '#000',
@@ -456,25 +471,39 @@ const styles = StyleSheet.create({
   cardIconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 40,
+    marginRight: 25,
   },
   cardIconCircle: {
     backgroundColor: '#fff',
-    borderRadius: 1000,
-    width: '100%',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    width: '70%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   incomingCard: {
-    backgroundColor: '#8BC34A',
+    backgroundColor: '#74BF22',
   },
   activeCard: {
-    backgroundColor: '#FF8C00',
+    backgroundColor: '#F17500',
   },
   earningsCard: {
     backgroundColor: '#000',
   },
   timeCard: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#C0C0C0',
   },
 });

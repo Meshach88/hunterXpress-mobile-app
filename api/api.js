@@ -7,9 +7,10 @@ const api = axios.create({
 });
 
 // Attach token automatically if logged in
-api.interceptors.request.use((config) => {
-    const token = AsyncStorage.getItem("authToken");
+api.interceptors.request.use(async (config) => {
+    const token = await AsyncStorage.getItem("authToken");
     if (token) config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Accept = "application/json";
     return config;
 });
 

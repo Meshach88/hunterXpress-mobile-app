@@ -531,13 +531,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        fontWeight: '700',
         color: '#000',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Bold',
     },
     subtitle: {
         color: '#999',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
     userTypeContainer: {
         flexDirection: 'row',
@@ -567,8 +566,7 @@ const styles = StyleSheet.create({
     },
     userTypeText: {
         color: '#F17500',
-        fontWeight: '700',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-SemiBold',
     },
     userTypeTextActive: {
         color: '#fff',
@@ -589,7 +587,7 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         color: '#000',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
     phoneContainer: {
         flexDirection: 'row',
@@ -615,8 +613,7 @@ const styles = StyleSheet.create({
     },
     sendOtpText: {
         color: '#F17500',
-        fontWeight: '700',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-SemiBold',
     },
     otpContainer: {
         flexDirection: 'row',
@@ -628,7 +625,7 @@ const styles = StyleSheet.create({
     otpInput: {
         flex: 1,
         color: '#000',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
     otpVerifyIcon: {
         marginLeft: 8,
@@ -645,12 +642,12 @@ const styles = StyleSheet.create({
     skipText: {
         color: '#FF8C00',
         fontWeight: '600',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
     dropdownPlaceholder: {
         flex: 1,
         color: '#999',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
     dropDown: {
         marginVertical: 8,
@@ -680,7 +677,7 @@ const styles = StyleSheet.create({
     uploadPlaceholder: {
         flex: 1,
         color: '#999',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
     signupButton: {
         backgroundColor: '#F17500',
@@ -701,8 +698,7 @@ const styles = StyleSheet.create({
     },
     signupButtonText: {
         color: '#fff',
-        fontWeight: '700',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-SemiBold',
     },
     signupButtonDisabled: {
         backgroundColor: '#F17500',
@@ -739,6 +735,6 @@ const styles = StyleSheet.create({
     },
     loginLinkText: {
         color: '#000',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
 })

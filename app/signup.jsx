@@ -10,7 +10,6 @@ import ImageUploadField from '@/components/form/ImageUploadField';
 import { useAuth } from '@/hooks/useAuth';
 
 
-
 export default function SignUpScreen() {
     const router = useRouter();
     const {signUp, sendOTP, isLoadiing} = useAuth();

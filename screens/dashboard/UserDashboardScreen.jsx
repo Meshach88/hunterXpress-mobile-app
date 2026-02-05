@@ -1,4 +1,3 @@
-// app/(tabs)/index.js
 import React from 'react';
 import {
   View,
@@ -17,9 +16,8 @@ import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@/hooks/useTheme';
 import { useResponsive } from '@/hooks/use-responsiveness';
-import HexagonalGrid from '@/components/dashboard/HexagonalGrid';
 import TransactionList from '@/components/dashboard/TransactionList';
-import LogisticsCard from '@/components/dashboard/LogisticCard';
+import LogisticsCards from '@/components/dashboard/LogisticsCards';
 
 
 export default function DashboardScreen() {
@@ -59,24 +57,25 @@ export default function DashboardScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        bounces={true}
+      <ImageBackground source={require('@/assets/images/dashboard-bg.png')}
+        style={styles.background}
       >
-        <ImageBackground source={require('@/assets/images/dashboard-bg.png')}
-          style={styles.background}
+        <View style={styles.overlay} />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          bounces={true}
         >
-          <View style={styles.overlay} />
 
           <View style={styles.content}>
             {/* Header Section */}
             <View style={[styles.header, { paddingHorizontal: scale(20) }]}>
               <View style={styles.headerLeft}>
-                <Image
+                {/* <Image
                   source={{ uri: 'https://i.pravatar.cc/150?img=12' }}
                   style={[styles.avatar, { width: scale(60), height: scale(60) }]}
-                />
+                /> */}
+                <Ionicons name="person" size={scale(40)} color={theme.colors.primary} style={styles.avatar} />
                 <View style={styles.greetingContainer}>
                   <Text style={[styles.greeting, { color: theme.colors.text }]}>
                     Hi Adam!
@@ -100,31 +99,15 @@ export default function DashboardScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Hexagonal Grid */}
-            <ImageBackground
-              source={require('@/assets/images/send_box.png')}
-              style={styles.cardContainer}
-              resizeMode='stretch'
-            >
-              <View style={styles.cardContent}>
-                <Text style={styles.title}>SEND</Text>
-              </View>
-            </ImageBackground>
-            {/* <HexagonalGrid router={router} /> */}
-
-            {/* <LogisticsCard
-              title="Package #12345"
-              subtitle="From Lagos to Abuja - Delivery in 2 days"
-              bgColor="#4ade80"
-            /> */}
+            <LogisticsCards router={router} />
 
             {/* Recent Transactions */}
             <View style={[styles.transactionsContainer, { paddingHorizontal: scale(20) }]}>
               <TransactionList transactions={transactions} router={router} />
             </View>
           </View>
-        </ImageBackground>
-      </ScrollView >
+        </ScrollView >
+      </ImageBackground>
     </SafeAreaView >
   );
 }
@@ -141,9 +124,50 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 30
   },
-  cardContainer: {
+  cardsContainer: {
+    position: 'relative'
+
+  },
+  sendCard: {
+    position: 'absolute',
+    zIndex: 10,
     marginVertical: 20,
-    alignSelf: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 100
+  },
+  receiveCard: {
+    position: 'absolute',
+    top: 100,
+    right: 35,
+    marginVertical: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 100
+  },
+  statCard: {
+    position: 'absolute',
+    transform: [{ scaleY: -1 }],
+    top: 30,
+    right: 110,
+    marginVertical: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 100
+  },
+  trackCard: {
+    position: 'absolute',
+    top: 190,
+    marginVertical: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
@@ -156,8 +180,6 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    alignSelf: "center",
-    backgroundColor: "black",
     marginTop: 40,
     marginLeft: 60
   },
@@ -168,6 +190,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    position: 'relative'
   },
   scrollContent: {
     paddingBottom: 100,
@@ -176,9 +199,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 60,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    paddingTop: 50
+    height: 180,
+    marginBottom: -35,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -194,14 +218,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 20,
-    fontWeight: '700',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Bold',
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 14,
     fontWeight: '400',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Medium',
   },
   messageButton: {
     width: 48,
@@ -222,6 +245,6 @@ const styles = StyleSheet.create({
     }),
   },
   transactionsContainer: {
-    marginTop: 10,
+    marginTop: 20,
   },
 });

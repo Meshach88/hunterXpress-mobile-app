@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -12,6 +11,7 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -19,12 +19,13 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
-// import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useResponsive } from '@/hooks/use-responsiveness';
+import api from '@/api/api';
 
 export default function SendItemScreen() {
   const router = useRouter();
-//   const { user } = useAuth();
+  const { user } = useAuth();
   const { scale, spacing, fontSize, isTablet } = useResponsive();
 
   const [formData, setFormData] = useState({
@@ -94,7 +95,7 @@ export default function SendItemScreen() {
   const pickImage = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
+
       if (status !== 'granted') {
         Alert.alert(
           'Permission Required',
@@ -129,7 +130,7 @@ export default function SendItemScreen() {
   const takePhoto = async () => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      
+
       if (status !== 'granted') {
         Alert.alert(
           'Permission Required',
@@ -225,39 +226,45 @@ export default function SendItemScreen() {
 
     try {
       // Prepare form data for API
-      const orderData = new FormData();
-      orderData.append('senderLocation', formData.senderLocation);
-      orderData.append('receiverLocation', formData.receiverLocation);
-      orderData.append('description', formData.description);
-    //   orderData.append('userId', user?.id);
+      // const orderData = new FormData();
+      // orderData.append('pickup_address', formData.senderLocation);
+      // orderData.append('dropoff_address', formData.receiverLocation);
+      // orderData.append('package_details', JSON.stringify({ description: formData.description }));
+      // orderData.append('price', 1500)
 
-      if (formData.photo) {
-        orderData.append('photo', {
-          uri: formData.photo.uri,
-          type: 'image/jpeg',
-          name: 'item-photo.jpg',
-        });
+      // if (formData.photo) {
+      //   orderData.append('photo', {
+      //     uri: formData.photo.uri,
+      //     type: 'image/jpeg',
+      //     name: 'item-photo.jpg',
+      //   });
+      // }
+
+      const orderData = {
+        pickup_address: formData.senderLocation,
+        dropoff_address: formData.receiverLocation,
+        package_details: JSON.stringify({ description: formData.description }),
+        price: 2000,
+        distance_km: 10
       }
 
-      // Replace with your actual API endpoint
-      const response = await fetch('https://your-api.com/api/orders', {
-        method: 'POST',
-        body: orderData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post('/deliveries', orderData);
 
-      const data = await response.json();
+      const data = await response.data;
 
-      if (response.ok) {
+      // console.log(data)
+
+      if (data.success) {
         Alert.alert(
           'Success',
           'Your order has been placed successfully!',
           [
             {
               text: 'OK',
-              onPress: () => router.back(),
+              onPress: () => router.push({
+                pathname: '/(customer)/payment',
+                params: { order: JSON.stringify(data) }
+              }),
             },
           ]
         );
@@ -299,8 +306,8 @@ export default function SendItemScreen() {
           </TouchableOpacity>
 
           {/* Title */}
-          <Text style={[styles.title, { 
-            fontSize: isTablet ? fontSize.xxxl * 1.3 : fontSize.xxxl * 1.2,
+          <Text style={[styles.title, {
+            fontSize: isTablet ? fontSize.xxxl * 1.3 : fontSize.xxxl,
             marginTop: spacing.lg,
           }]}>
             Send Item
@@ -311,7 +318,7 @@ export default function SendItemScreen() {
             <TextInput
               style={[
                 styles.input,
-                { 
+                {
                   fontSize: fontSize.md,
                   borderColor: errors.senderLocation ? '#FF3B30' : '#E0E0E0',
                 }
@@ -351,7 +358,7 @@ export default function SendItemScreen() {
             <TextInput
               style={[
                 styles.input,
-                { 
+                {
                   fontSize: fontSize.md,
                   borderColor: errors.receiverLocation ? '#FF3B30' : '#E0E0E0',
                 }
@@ -374,7 +381,7 @@ export default function SendItemScreen() {
               style={[
                 styles.input,
                 styles.descriptionInput,
-                { 
+                {
                   fontSize: fontSize.md,
                   borderColor: errors.description ? '#FF3B30' : '#E0E0E0',
                 }
@@ -402,7 +409,7 @@ export default function SendItemScreen() {
             <TouchableOpacity
               style={[
                 styles.photoContainer,
-                { 
+                {
                   height: scale(150),
                   marginTop: spacing.sm,
                 }
@@ -428,10 +435,10 @@ export default function SendItemScreen() {
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <Ionicons name="image-outline" size={scale(60)} color="#CCC" />
-                  <Ionicons 
-                    name="add-circle" 
-                    size={scale(32)} 
-                    color="#999" 
+                  <Ionicons
+                    name="add-circle"
+                    size={scale(32)}
+                    color="#999"
                     style={styles.addIcon}
                   />
                 </View>
@@ -485,9 +492,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontWeight: '700',
     color: '#000',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Bold',
   },
   input: {
     borderWidth: 1,
@@ -496,7 +502,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     backgroundColor: '#fff',
     color: '#000',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
     minHeight: 56,
   },
   descriptionInput: {
@@ -508,7 +514,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
     marginLeft: 4,
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   useLocationButton: {
     flexDirection: 'row',
@@ -519,11 +525,11 @@ const styles = StyleSheet.create({
   useLocationText: {
     color: '#FF8C00',
     textDecorationLine: 'underline',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   photoLabel: {
     color: '#999',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   optionalText: {
     color: '#999',
@@ -591,8 +597,7 @@ const styles = StyleSheet.create({
   },
   placeOrderButtonText: {
     color: '#fff',
-    fontWeight: '700',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-SemiBold',
   },
   buttonDisabled: {
     opacity: 0.6,

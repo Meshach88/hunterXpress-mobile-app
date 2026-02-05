@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
             // Replace with your actual API endpoint
             const response = await api.post('/user/login', { emailOrPhone, password })
 
-            console.log('Login in response', response);
+            // console.log('Auth Login in response', response);
 
             const data = await response.data;
             console.log('Login data', data)

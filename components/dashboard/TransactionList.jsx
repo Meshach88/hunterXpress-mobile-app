@@ -1,4 +1,3 @@
-// src/components/dashboard/TransactionList.js
 import React from 'react';
 import {
     View,
@@ -20,7 +19,8 @@ export default function TransactionList({ transactions, router }) {
         if (Platform.OS === 'ios') {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }
-        router.push(`/transaction/${id}`);
+        // router.push(`/transaction/${id}`);
+        router.push('/(tabs)/history');
     };
 
     return (
@@ -40,23 +40,24 @@ export default function TransactionList({ transactions, router }) {
                     </View>
 
                     <View style={styles.transactionDetails}>
-                        <View style={styles.statusRow}>
-                            <View style={styles.statusDot} />
-                            <Text style={styles.status}>{transaction.status}</Text>
+                        <View style={styles.statusContainer}>
+                            <View style={styles.statusRow}>
+                                <Ionicons name="location" size={12} color="#27794D" style={{marginRight: 6}} />
+                                <Text style={styles.status}>{transaction.status}</Text>
+                            </View>
+                            <TouchableOpacity
+                                style={styles.detailsButton}
+                                onPress={() => handleDetailsPress(transaction.id)}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={styles.detailsText}>Details</Text>
+                            </TouchableOpacity>
                         </View>
                         <Text style={styles.address} numberOfLines={1}>
                             {transaction.address}
                         </Text>
                         <Text style={styles.time}>{transaction.timeToLocation}</Text>
                     </View>
-
-                    <TouchableOpacity
-                        style={styles.detailsButton}
-                        onPress={() => handleDetailsPress(transaction.id)}
-                        activeOpacity={0.7}
-                    >
-                        <Text style={styles.detailsText}>Details</Text>
-                    </TouchableOpacity>
                 </View>
             ))}
         </View>
@@ -81,10 +82,10 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: '700',
-        fontFamily: 'Inter-Bold',
+        fontFamily: 'Sora-Medium',
         color: '#000',
         marginBottom: 16,
+        textAlign: 'center'
     },
     transactionItem: {
         flexDirection: 'row',
@@ -107,46 +108,43 @@ const styles = StyleSheet.create({
     transactionDetails: {
         flex: 1,
     },
+    statusContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     statusRow: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 4,
     },
-    statusDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#4CAF50',
-        marginRight: 6,
-    },
     status: {
         fontSize: 12,
-        fontWeight: '600',
-        fontFamily: 'Inter-SemiBold',
-        color: '#000',
+        fontFamily: 'Sora-Regular',
+        color: 'rgba(0, 0, 0, 0.6)',
     },
     address: {
         fontSize: 14,
-        fontWeight: '600',
-        fontFamily: 'Inter-SemiBold',
+        fontFamily: 'Sora-Regular',
         color: '#000',
         marginBottom: 2,
     },
     time: {
         fontSize: 12,
-        fontFamily: 'Inter-Regular',
+        fontFamily: 'Sora-Regular',
         color: 'rgba(0, 0, 0, 0.6)',
     },
     detailsButton: {
         backgroundColor: '#000',
         paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 8,
+        paddingVertical: 4,
+        borderRadius: 4,
+        marginBottom: 5,
     },
     detailsText: {
         color: '#fff',
         fontSize: 12,
-        fontWeight: '600',
-        fontFamily: 'Inter-SemiBold',
+        fontWeight: '500',
+        fontFamily: 'Sora-Medium',
     },
 });

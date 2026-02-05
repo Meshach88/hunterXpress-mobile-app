@@ -217,13 +217,14 @@ export default function ProfileScreen() {
                 {/* Profile Section */}
                 <View style={[styles.profileSection, { marginTop: spacing.xl }]}>
                     <View style={styles.avatarContainer}>
-                        <Image
+                        {/* <Image
                             source={{ uri: profileImage }}
                             style={[styles.avatar, {
                                 width: scale(140),
                                 height: scale(140),
                             }]}
-                        />
+                        /> */}
+                        <Ionicons name="person" size={scale(140)} style = {styles.avatar} color="#ccc"/>
                         <TouchableOpacity
                             style={[styles.editPhotoButton, {
                                 width: scale(40),

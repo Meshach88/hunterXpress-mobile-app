@@ -135,21 +135,13 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     title: {
-        fontWeight: '700',
         color: '#F17500',
         lineHeight: 48,
-        fontFamily: Platform.select({
-            ios: 'System',
-            android: 'Roboto',
-        }),
+        fontFamily: 'Sora-Bold',
     },
     subtitle: {
-        fontWeight: '400',
         color: '#666',
-        fontFamily: Platform.select({
-            ios: 'System',
-            android: 'Roboto',
-        }),
+        fontFamily: 'Sora-Regular',
     },
     buttonsSection: {
         paddingBottom: 40,
@@ -173,26 +165,18 @@ const styles = StyleSheet.create({
     },
     loginButton: {
         backgroundColor: 'white',
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: '#F17500',
     },
     loginButtonText: {
         color: '#F17500',
-        fontWeight: '700',
-        fontFamily: Platform.select({
-            ios: 'System',
-            android: 'Roboto',
-        }),
+        fontFamily: 'Sora-SemiBold',
     },
     signupButton: {
         backgroundColor: '#F17500',
     },
     signupButtonText: {
         color: '#FFFFFF',
-        fontWeight: '700',
-        fontFamily: Platform.select({
-            ios: 'System',
-            android: 'Roboto',
-        }),
+        fontFamily: 'Sora-SemiBold',
     },
 })

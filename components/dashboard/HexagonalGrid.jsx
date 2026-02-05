@@ -112,18 +112,6 @@ export default function HexagonalGrid({ router }) {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Decorative Lines */}
-      {/* <View style={styles.linesContainer}>
-        <LinearGradient
-          colors={['#FF8C00', '#FF8C00']}
-          style={[styles.line, styles.lineOrange]}
-        />
-        <LinearGradient
-          colors={['#8BC34A', '#8BC34A']}
-          style={[styles.line, styles.lineGreen]}
-        />
-      </View> */}
     </View>
   );
 }
@@ -164,29 +152,5 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
     letterSpacing: 1,
-  },
-  linesContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-  },
-  line: {
-    position: 'absolute',
-    height: 3,
-  },
-  lineOrange: {
-    width: '45%',
-    top: '30%',
-    left: '25%',
-    transform: [{ rotate: '30deg' }],
-  },
-  lineGreen: {
-    width: '45%',
-    top: '55%',
-    left: '30%',
-    transform: [{ rotate: '-30deg' }],
   },
 });

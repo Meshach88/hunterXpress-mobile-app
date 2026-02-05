@@ -14,8 +14,6 @@ export default function LoginScreen() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { login } = useAuth()
 
-
-
     // Form state
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
@@ -37,7 +35,6 @@ export default function LoginScreen() {
     }
 
     const handleLogin = async () => {
-        // if (!isFormValid || isSubmitting) return;
         if (!validateForm()) {
             Alert.alert('Error', 'Please fill in all required fields.');
             return;
@@ -51,14 +48,14 @@ export default function LoginScreen() {
 
             const result = await login(emailOrPhone, password)
 
-            // await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // console.log('Logged in', { emailOrPhone, password });
-            console.log('Log in response', result);
+            // console.log('Log in response', result);
+            const userType = result.data.user.role == 'customer' ? 'User' : 'Courier';
 
             if (result.success) {
-
-                router.push('/(tabs)/')
+                router.push({
+                    pathname: '/(tabs)/',
+                    params: { userType }
+                })
             } else {
                 Alert.alert('Error', result.error || 'Failed to login. Please try again.')
             }
@@ -97,7 +94,6 @@ export default function LoginScreen() {
                     <Text style={[styles.subtitle, { fontSize: fontSize.md, marginTop: spacing.xs }]}>
                         Enter your credential to continue
                     </Text>
-
 
                     {/* Email or Phone Input */}
                     <View style={[styles.inputContainer, { marginTop: spacing.lg, borderColor: errors.emailOrPhone ? '#FF3B30' : '#E0E0E0' }]}>
@@ -189,15 +185,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        fontWeight: '700',
         color: '#000',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Bold',
     },
     subtitle: {
         color: '#999',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
-
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -214,18 +208,15 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         color: '#000',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
-
     forgotPasswordContainer: {
         alignItems: 'flex-end',
     },
     forgotPasswordText: {
         color: '#000000',
-        fontWeight: '600',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
-
     loginButton: {
         backgroundColor: '#F17500',
         borderRadius: 28,
@@ -245,8 +236,7 @@ const styles = StyleSheet.create({
     },
     loginButtonText: {
         color: '#fff',
-        fontWeight: '700',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Bold',
     },
     loginButtonDisabled: {
         backgroundColor: '#F17500',
@@ -257,12 +247,13 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 4,
         marginLeft: 16,
+        fontFamily: 'Sora-Regular',
     },
     signupLink: {
         alignItems: 'center',
     },
     signupLinkText: {
         color: '#000',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+        fontFamily: 'Sora-Regular',
     },
 })
