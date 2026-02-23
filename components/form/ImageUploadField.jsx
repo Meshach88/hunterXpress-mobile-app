@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
 const ImageUploadField = ({
-    value = null,            // selected image URI
+    value = true,            // selected image URI
     onChange,
     placeholder = 'Upload image',
     icon = 'image-outline',
@@ -32,9 +32,12 @@ const ImageUploadField = ({
 
 
         if (!result.canceled) {
-            onChange(result.assets[0].uri);
+            onChange(result.assets[0]);
         }
     };
+    const closePreview = () => {
+        onChange(null)
+    }
 
     return (
         <View>
@@ -51,8 +54,7 @@ const ImageUploadField = ({
                 />
 
                 <Text
-                    style={[
-                        styles.uploadPlaceholder,
+                    style={[styles.uploadPlaceholder,
                         { fontSize },
                         value && { color: '#000' },
                     ]}
@@ -63,43 +65,21 @@ const ImageUploadField = ({
 
             {/* Preview */}
             {value && (
-                <Image
-                    source={{ uri: value }}
-                    style={styles.uploadPreview}
-                />
+                <View>
+                    <TouchableOpacity
+                        onPress={closePreview}
+                    >
+                        <Ionicons name='close' size={24} color='red' />
+                    </TouchableOpacity>
+                    <Image
+                        source={{ uri: value.uri }}
+                        style={styles.uploadPreview}
+                    />
+                </View>
             )}
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    uploadContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        height: 56,
-        backgroundColor: '#fff',
-    },
-    uploadPlaceholder: {
-        flex: 1,
-        color: '#999',
-        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
-    },
-    inputIcon: {
-        marginRight: 12,
-    },
-    uploadPreview: {
-        marginTop: 10,
-        width: '100%',
-        height: 180,
-        borderRadius: 10,
-        resizeMode: 'cover',
-    },
-
-})
 
 export default ImageUploadField;
 

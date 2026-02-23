@@ -8,6 +8,7 @@ import { useResponsive } from '@/hooks/use-responsiveness';
 import SelectField from '@/components/form/SelectField';
 import ImageUploadField from '@/components/form/ImageUploadField';
 import { useAuth } from '@/hooks/useAuth';
+import api from '@/api/api';
 
 
 
@@ -90,15 +91,12 @@ export default function SignUpScreen() {
         // console.log(type)
     };
 
-    const handleSendOtp = () => {
+    const handleSendOtp = async () => {
         if (Platform.OS === 'ios') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-        setTimeout(() => {
-            setOtpSent(!otpSent);
-            console.log('OTP sent')
-        }, 2000)
-        // Add your OTP logic here
+        const response = await api.post('user/sendOtp', { phone: formData.phone, email: formData.email, channel: "all" })
+        setOtpSent(!otpSent);
     };
 
     const updateFormData = (field, value) => {
@@ -149,19 +147,27 @@ export default function SignUpScreen() {
                 userData.accountNumber = formData.accountNumber;
             }
 
-            // console.log('Sign up clicked', formData, userData);
+            const formPayload = new FormData();
 
-            const result = await signUp(userData, userType);
-            console.log('Sign up response', result);
-            if (result.success) {
-                // Navigate to confirmation screen
-                router.push({
-                    pathname: '/(auth)/confirm',
-                    params: { userType }
-                });
-            } else {
-                Alert.alert('Error', result.error || 'Failed to sign up. Please try again.');
+            // Append all formData fields to FormData object
+            for (const key in formData) {
+                if (formData[key] !== undefined && formData[key] !== null) {
+                    formPayload.append(key, formData[key]);
+                }
             }
+
+            console.log('Sign up clicked', formData, formPayload);
+
+            // const result = await signUp(userData, userType);
+            // console.log('Sign up response', result);
+            // if (result.success) {
+            //     router.push({
+            //         pathname: '/(auth)/confirm',
+            //         params: { userType }
+            //     });
+            // } else {
+            //     Alert.alert('Error', result.error || 'Failed to sign up. Please try again.');
+            // }
         } catch (error) {
             console.log(error);
         } finally {
@@ -571,6 +577,28 @@ const styles = StyleSheet.create({
     userTypeTextActive: {
         color: '#fff',
     },
+    uploadContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        height: 56,
+        backgroundColor: '#fff',
+    },
+    uploadPlaceholder: {
+        flex: 1,
+        color: '#999',
+        fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    },
+    uploadPreview: {
+        marginTop: 10,
+        width: '100%',
+        height: 180,
+        borderRadius: 10,
+        resizeMode: 'cover',
+    },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -662,17 +690,8 @@ const styles = StyleSheet.create({
     },
     dropdownText: {
         fontSize: 16,
-        color: '#111827'
-    },
-    uploadContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        height: 56,
-        backgroundColor: '#fff',
+        color: '#999',
+        fontFamily: 'Sora-Regular'
     },
     uploadPlaceholder: {
         flex: 1,

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const api = axios.create({
-    baseURL: "https://hunter-xpress-backend.vercel.app/api",
+    baseURL: "https://hunterxpress-backend.onrender.com/api", 
 });
 
 // Attach token automatically if logged in

@@ -40,15 +40,16 @@ export const AuthProvider = ({ children }) => {
             console.log("Response object", response);
             const data = await response.data;
             console.log(data);
+            const userType = type == 'User' ? 'customer' : 'courier'
             if (data.success) {
                 // Store user data
                 // await AsyncStorage.setItem('user', JSON.stringify(data.user));
                 // await AsyncStorage.setItem('authToken', data.token);
-                await AsyncStorage.setItem('userType', type);
+                await AsyncStorage.setItem('userType', userType);
 
                 // setUser(data.user);
                 // setAuthToken(data.token);
-                setUserType(type);
+                setUserType(userType);
 
                 return { success: true, data: data };
             } else {
@@ -81,7 +82,7 @@ export const AuthProvider = ({ children }) => {
 
                 setUser(data.user);
                 setAuthToken(data.token);
-                setUserType(data.user.userType);
+                setUserType(data.user.role);
 
                 return { success: true, data };
             } else {
@@ -109,12 +110,12 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const sendOTP = async (phone) => {
+    const sendOTP = async (phone, email) => {
         try {
 
-            const response = await axios.post('/send-otp', { phone });
+            const response = await axios.post('/send-otp', { phone, email });
             console.log(response);
-            const data = await response.json();
+            const data = await response.data;
             return { success: response.ok, data };
         } catch (error) {
             console.error('Send OTP error:', error);
