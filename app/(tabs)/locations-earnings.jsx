@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function LocationsEarningsScreen() {
     return (
-        <SafeAreaView>
+        <SafeAreaView edges={['top']}>
             <ScrollView>
                 <LocationsScreen />
             </ScrollView>

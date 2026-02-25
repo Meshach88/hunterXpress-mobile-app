@@ -4,11 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams } from 'expo-router';
+import { useAuth } from '@/hooks/useAuth';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams()
-  const userType = params?.userType || 'User'
+  const { userType } = useAuth()
 
   const handleTabPress = () => {
     if (Platform.OS === 'ios') {
@@ -28,8 +31,10 @@ export default function TabLayout() {
           borderTopWidth: 0,
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
-          height: Platform.OS === 'ios' ? 88 : 80,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          paddingBottom: insets.bottom + 10,
+          height: 70 + insets.bottom,
+          // height: Platform.OS === 'ios' ? 88 : 80,
+          // paddingBottom: Platform.OS === 'ios' ? 28 : 10,
           // marginTop: 10,
           paddingTop: 8,
           ...Platform.select({
@@ -78,7 +83,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name= "locations-earnings"
+        name="locations-earnings"
         options={{
           title: userType == 'User' ? 'Locations' : 'Earnings',
           tabBarIcon: ({ color, size }) => (

@@ -1,4 +1,3 @@
-// app/(tabs)/index.js - Courier Dashboard
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -51,13 +50,13 @@ export default function CourierDashboardScreen() {
     try {
       setIsLoading(true);
       // Replace with your actual API endpoint
-      const response = await fetch(`https://your-api.com/api/courier/dashboard/${user?.id}`);
-      const data = await response.json();
+      // const response = await fetch(`https://your-api.com/api/courier/dashboard/${user?.id}`);
+      // const data = await response.json();
 
-      if (response.ok) {
-        setDashboardData(data);
-        setIsOnline(data.isOnline || false);
-      }
+      // if (response.ok) {
+      //   setDashboardData(data);
+      //   setIsOnline(data.isOnline || false);
+      // }
     } catch (error) {
       console.error('Error fetching courier data:', error);
     } finally {
@@ -74,22 +73,22 @@ export default function CourierDashboardScreen() {
 
     try {
       // Update online status on backend
-      const response = await fetch(`https://your-api.com/api/courier/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          courierId: user?.id,
-          isOnline: value,
-        }),
-      });
+      // const response = await fetch(`https://your-api.com/api/courier/status`, {
+      //   method: 'PATCH',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     courierId: user?.id,
+      //     isOnline: value,
+      //   }),
+      // });
 
-      if (!response.ok) {
-        // Revert if API call fails
-        setIsOnline(!value);
-        Alert.alert('Error', 'Failed to update status');
-      }
+      // if (!response.ok) {
+      //   // Revert if API call fails
+      //   setIsOnline(!value);
+      //   Alert.alert('Error', 'Failed to update status');
+      // }
     } catch (error) {
       setIsOnline(!value);
       console.error('Error updating status:', error);
@@ -150,10 +149,18 @@ export default function CourierDashboardScreen() {
         {/* Header */}
         <View style={[styles.header, { marginTop: spacing.md }]}>
           <View style={styles.headerLeft}>
-            <Image
-              source={{ uri: user?.profileImage || 'https://i.pravatar.cc/150?img=33' }}
-              style={[styles.avatar, { width: scale(60), height: scale(60) }]}
-            />
+            {
+              user?.profileImage
+                ?
+                <Image
+                  source={{ uri: user.profileImage }}
+                  style={[styles.avatar, { width: scale(60), height: scale(60) }]}
+                />
+                :
+                <Ionicons style={styles.avatar} name='person' size={scale(60)} color="#ccc" />
+            
+            }
+
             <View style={styles.greetingContainer}>
               <Text style={[styles.greeting, { fontSize: fontSize.xl }]}>
                 Hi {user?.name?.split(' ')[0] || 'Courier'}!
@@ -227,10 +234,10 @@ export default function CourierDashboardScreen() {
             <View style={[styles.cardIconContainer, { width: scale(80), height: scale(120) }]}>
               <View style={styles.cardIconCircle}>
                 {/* <Ionicons name="cube-outline" size={scale(40)} color="#fff" /> */}
-                <Image 
-                source={require('@/assets/images/truck-green-outline.png')}
-                resizeMode='contain'
-                style = {{width: scale(40)}}
+                <Image
+                  source={require('@/assets/images/truck-green-outline.png')}
+                  resizeMode='contain'
+                  style={{ width: scale(40) }}
                 />
               </View>
             </View>
@@ -264,8 +271,8 @@ export default function CourierDashboardScreen() {
               <View style={styles.cardIconCircle}>
                 {/* <Ionicons name="bicycle-outline" size={scale(40)} color="#FF8C00" /> */}
                 <Image source={require('@/assets/images/truck-orange.png')}
-                resizeMode='contain'
-                style={{width: scale(40)}}
+                  resizeMode='contain'
+                  style={{ width: scale(40) }}
                 />
               </View>
             </View>

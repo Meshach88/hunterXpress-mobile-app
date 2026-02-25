@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '@/api/api';
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
@@ -33,9 +34,34 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const uploadToCloudinary = async (image) => {
+        const data = new FormData();
+
+        data.append('file', {
+            uri: image.uri,
+            type: image.mimeType || 'image/jpeg',
+            name: image.fileName || 'upload.jpg',
+        });
+
+        data.append('upload_preset', 'hunterxpress');
+
+        const res = await fetch(
+            'https://api.cloudinary.com/v1_1/di5kydq6a/image/upload',
+            {
+                method: 'POST',
+                body: data,
+            }
+        );
+        console.log('Cloudinary response', res)
+
+        const json = await res.json();
+        return json.secure_url;
+    };
+
     const signUp = async (userData, type) => {
         try {
             setIsLoading(true);
+            console.log(userData)
             const response = await api.post('/user/register', userData)
             console.log("Response object", response);
             const data = await response.data;
@@ -133,6 +159,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         sendOTP,
         isAuthenticated: !!user,
+        uploadToCloudinary
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -55,8 +55,8 @@ const ImageUploadField = ({
 
                 <Text
                     style={[styles.uploadPlaceholder,
-                        { fontSize },
-                        value && { color: '#000' },
+                    { fontSize },
+                    value && { color: '#000' },
                     ]}
                 >
                     {value ? 'Change image' : placeholder}
@@ -65,15 +65,16 @@ const ImageUploadField = ({
 
             {/* Preview */}
             {value && (
-                <View>
+                <View style={styles.uploadPreview}>
                     <TouchableOpacity
                         onPress={closePreview}
+                        style={styles.closePreview}
                     >
                         <Ionicons name='close' size={24} color='red' />
                     </TouchableOpacity>
                     <Image
                         source={{ uri: value.uri }}
-                        style={styles.uploadPreview}
+                        style={styles.imagePreview}
                     />
                 </View>
             )}

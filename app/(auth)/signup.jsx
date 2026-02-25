@@ -14,7 +14,7 @@ import api from '@/api/api';
 
 export default function SignUpScreen() {
     const router = useRouter();
-    const { signUp, sendOTP } = useAuth();
+    const { signUp, sendOTP, uploadToCloudinary } = useAuth();
     const { scale, spacing, fontSize, isTablet } = useResponsive();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [userType, setUserType] = useState('User');
@@ -95,7 +95,7 @@ export default function SignUpScreen() {
         if (Platform.OS === 'ios') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-        const response = await api.post('user/sendOtp', { phone: formData.phone, email: formData.email, channel: "all" })
+        // const response = await api.post('user/sendOtp', { phone: formData.phone, email: formData.email, channel: "all" })
         setOtpSent(!otpSent);
     };
 
@@ -121,8 +121,7 @@ export default function SignUpScreen() {
                     Haptics.NotificationFeedbackType.Success
                 );
             }
-
-            // Prepare data based on user type
+            
             const userData = {
                 name: formData.name,
                 email: formData.email,
@@ -137,37 +136,32 @@ export default function SignUpScreen() {
                 userData.address = formData.deliveryAddress;
             } else if (userType === 'Courier') {
                 userData.deliveryMethod = formData.deliveryMethod;
-                userData.vehicleModel = formData.vehicleModel;
-                userData.vehiclePlate = formData.vehiclePlate;
-                userData.vehicleColor = formData.vehicleColor;
-                userData.validId = formData.validId;
-                userData.proofOfAddress = formData.proofOfAddress;
+                userData.model = formData.vehicleModel;
+                userData.plateNumber = formData.vehiclePlate;
+                userData.color = formData.vehicleColor;
                 userData.payoutMethod = formData.payoutMethod;
                 userData.bankName = formData.bankName;
                 userData.accountNumber = formData.accountNumber;
+
+                //Image files upload
+                const validIdUrl = await uploadToCloudinary(formData.validId)
+                const proofOfAddressUrl = await uploadToCloudinary(formData.proofOfAddress)
+                userData.validId = validIdUrl;
+                userData.proofOfAddress = proofOfAddressUrl;
             }
 
-            const formPayload = new FormData();
+            // console.log('Sign up clicked', formData, userData);
 
-            // Append all formData fields to FormData object
-            for (const key in formData) {
-                if (formData[key] !== undefined && formData[key] !== null) {
-                    formPayload.append(key, formData[key]);
-                }
+            const result = await signUp(userData, userType);
+            console.log('Sign up response', result);
+            if (result.success) {
+                router.push({
+                    pathname: '/(auth)/confirm',
+                    params: { userType }
+                });
+            } else {
+                Alert.alert('Error', result.error || 'Failed to sign up. Please try again.');
             }
-
-            console.log('Sign up clicked', formData, formPayload);
-
-            // const result = await signUp(userData, userType);
-            // console.log('Sign up response', result);
-            // if (result.success) {
-            //     router.push({
-            //         pathname: '/(auth)/confirm',
-            //         params: { userType }
-            //     });
-            // } else {
-            //     Alert.alert('Error', result.error || 'Failed to sign up. Please try again.');
-            // }
         } catch (error) {
             console.log(error);
         } finally {
@@ -593,6 +587,17 @@ const styles = StyleSheet.create({
         fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
     },
     uploadPreview: {
+        flex: 1,
+        position: 'relative',
+    },
+    closePreview: {
+        position: 'absolute',
+        zIndex: 1,
+        backgroundColor: '#fff',
+        right: 6,
+        top: 14,
+    },
+    imagePreview: {
         marginTop: 10,
         width: '100%',
         height: 180,

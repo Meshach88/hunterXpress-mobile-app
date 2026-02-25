@@ -56,6 +56,7 @@ export default function DashboardScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['top']}
     >
       <ImageBackground source={require('@/assets/images/dashboard-bg.png')}
         style={styles.background}
