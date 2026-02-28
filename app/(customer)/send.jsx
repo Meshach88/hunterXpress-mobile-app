@@ -29,7 +29,9 @@ export default function SendItemScreen() {
   const { scale, spacing, fontSize, isTablet } = useResponsive();
 
   const [formData, setFormData] = useState({
+    sender: user.name,
     senderLocation: '',
+    recipient: '',
     receiverLocation: '',
     description: '',
     photo: null,
@@ -200,6 +202,10 @@ export default function SendItemScreen() {
       newErrors.senderLocation = 'Sender location is required';
     }
 
+    if (!formData.recipient.trim()) {
+      newErrors.recipient = "Recipient's Name is required";
+    }
+
     if (!formData.receiverLocation.trim()) {
       newErrors.receiverLocation = 'Receiver location is required';
     }
@@ -241,7 +247,9 @@ export default function SendItemScreen() {
       // }
 
       const orderData = {
+        sender: formData.sender,
         pickup_address: formData.senderLocation,
+        recipient: formData.recipient,
         dropoff_address: formData.receiverLocation,
         package_details: JSON.stringify({ description: formData.description }),
         price: 2000,
@@ -351,6 +359,28 @@ export default function SendItemScreen() {
                 </>
               )}
             </TouchableOpacity>
+          </View>
+
+          {/* Recipient */}
+          <View style={{ marginTop: spacing.lg }}>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  fontSize: fontSize.md,
+                  borderColor: errors.recipient ? '#FF3B30' : '#E0E0E0',
+                }
+              ]}
+              placeholder="Receiver's Full Name:"
+              placeholderTextColor="#999"
+              value={formData.recipient}
+              onChangeText={(value) => updateFormData('recipient', value)}
+              editable={!isSubmitting}
+              multiline
+            />
+            {errors.recipient && (
+              <Text style={styles.errorText}>{errors.recipient}</Text>
+            )}
           </View>
 
           {/* Receiver Location */}

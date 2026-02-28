@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useAuth } from '@/hooks/useAuth';
 import { useResponsive } from '@/hooks/use-responsiveness';
@@ -34,11 +34,11 @@ export default function DeliveryHistoryScreen() {
   const fetchDeliveryHistory = async () => {
     try {
       setIsLoading(true);
-      
-      // Replace with your actual API endpoint
+
       const response = await api.get('/deliveries/my-orders');
       const data = await response.data;
-      
+      console.log(data)
+
       if (data.success) {
         setDeliveries(data.deliveries || getMockDeliveries());
       } else {
@@ -107,6 +107,8 @@ export default function DeliveryHistoryScreen() {
 
   const getStatusColor = (status) => {
     switch (status) {
+      case 'pending':
+        return '#FFF4C7'
       case 'in_progress':
         return '#FFF5E6';
       case 'completed':
@@ -120,6 +122,8 @@ export default function DeliveryHistoryScreen() {
 
   const getStatusTextColor = (status) => {
     switch (status) {
+      case 'pending':
+        return '#7E6604';
       case 'in_progress':
         return '#FF8C00';
       case 'completed':
@@ -133,6 +137,8 @@ export default function DeliveryHistoryScreen() {
 
   const getStatusText = (status) => {
     switch (status) {
+      case 'pending':
+        return 'Pending';
       case 'in_progress':
         return 'In progress';
       case 'completed':
@@ -163,7 +169,7 @@ export default function DeliveryHistoryScreen() {
           <Ionicons name="arrow-back" size={28} color="#000" />
         </TouchableOpacity>
 
-        <Text style={[styles.title, { fontSize: isTablet ? fontSize.xxxl * 1.2 : fontSize.xxl }]}>
+        <Text style={[styles.title, { fontSize: isTablet ? fontSize.xxxl * 1.2 : fontSize.xxl * 0.9 }]}>
           Delivery History
         </Text>
 
@@ -201,10 +207,10 @@ export default function DeliveryHistoryScreen() {
         ) : (
           deliveries.map((delivery, index) => (
             <TouchableOpacity
-              key={`${delivery.id}-${index}`}
+              key={`${delivery._id}-${index}`}
               style={[
                 styles.deliveryCard,
-                { 
+                {
                   marginTop: index === 0 ? spacing.lg : spacing.md,
                   marginBottom: index === deliveries.length - 1 ? spacing.xl : 0,
                 }
@@ -216,25 +222,25 @@ export default function DeliveryHistoryScreen() {
               <View style={styles.cardHeader}>
                 <View>
                   <Text style={[styles.orderId, { fontSize: fontSize.lg }]}>
-                    {delivery.id}
+                    {delivery.order_reference.toUpperCase()}
                   </Text>
                   <Text style={[styles.recipient, { fontSize: fontSize.sm, marginTop: spacing.xs }]}>
-                    Receipient: {delivery.recipient}
+                    Recipient: {user.name}
                   </Text>
                 </View>
 
                 <View style={[
                   styles.statusBadge,
-                  { backgroundColor: getStatusColor(delivery.status) }
+                  { backgroundColor: getStatusColor(delivery.delivery_status) }
                 ]}>
                   <Text style={[
                     styles.statusText,
-                    { 
+                    {
                       fontSize: fontSize.xs,
-                      color: getStatusTextColor(delivery.status)
+                      color: getStatusTextColor(delivery.delivery_status)
                     }
                   ]}>
-                    {getStatusText(delivery.status)}
+                    {getStatusText(delivery.delivery_status)}
                   </Text>
                 </View>
               </View>
@@ -242,7 +248,8 @@ export default function DeliveryHistoryScreen() {
               {/* Delivery Details */}
               <View style={[styles.deliveryDetails, { marginTop: spacing.md }]}>
                 <View style={styles.iconRow}>
-                  <Ionicons name="bicycle-outline" size={24} color="#666" />
+                  {/* <Ionicons name="bicycle-outline" size={24} color="#666" /> */}
+                  <MaterialCommunityIcons name="motorbike" size={28} color="#000" />
                   <View style={styles.detailsContent}>
                     <View style={styles.locationRow}>
                       <Ionicons name="location" size={16} color="#4CAF50" />
@@ -251,11 +258,16 @@ export default function DeliveryHistoryScreen() {
                       </Text>
                     </View>
                     <Text style={[styles.locationText, { fontSize: fontSize.md, marginTop: spacing.xs }]}>
-                      {delivery.dropOffLocation}
+                      {delivery.dropoff_address}
                     </Text>
-                    {delivery.status === 'in_progress' && delivery.estimatedTime && (
+                    {delivery.delivery_status === 'in_progress' && delivery.estimatedTime && (
                       <Text style={[styles.timeText, { fontSize: fontSize.sm, marginTop: spacing.xs }]}>
                         {delivery.estimatedTime}
+                      </Text>
+                    )}
+                    {delivery.delivery_status === 'pending' && (
+                      <Text style={[styles.timeText, { fontSize: fontSize.sm, marginTop: spacing.xs }]}>
+                        20 mins to delivery location
                       </Text>
                     )}
                     {delivery.status === 'completed' && delivery.date && (
@@ -299,11 +311,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontWeight: '700',
     color: '#000',
     flex: 1,
     marginLeft: 8,
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Bold',
   },
   filterButton: {
     borderRadius: 12,
@@ -323,18 +334,18 @@ const styles = StyleSheet.create({
   emptyText: {
     fontWeight: '600',
     color: '#666',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   emptySubtext: {
     color: '#999',
     textAlign: 'center',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   deliveryCard: {
     backgroundColor: '#fff',
     borderRadius: 16,
     padding: 16,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderColor: '#E0E0E0',
     ...Platform.select({
       ios: {
@@ -354,13 +365,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   orderId: {
-    fontWeight: '700',
     color: '#000',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   recipient: {
     color: '#666',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -369,7 +379,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontWeight: '600',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   deliveryDetails: {
     paddingTop: 12,
@@ -391,20 +401,20 @@ const styles = StyleSheet.create({
   locationLabel: {
     color: '#4CAF50',
     fontWeight: '600',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   locationText: {
     color: '#000',
     fontWeight: '500',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   timeText: {
-    color: '#FF8C00',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    color: '#545454',
+    fontFamily: 'Sora-Regular',
   },
   dateText: {
     color: '#666',
-    fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
+    fontFamily: 'Sora-Regular',
   },
   separator: {
     height: 1,

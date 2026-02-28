@@ -29,7 +29,9 @@ export default function SendItemScreen() {
   const { scale, spacing, fontSize, isTablet } = useResponsive();
 
   const [formData, setFormData] = useState({
+    sender: '',
     senderLocation: '',
+    recipient: user.name,
     receiverLocation: '',
     description: '',
     photo: null,
@@ -196,6 +198,10 @@ export default function SendItemScreen() {
   const validateForm = () => {
     const newErrors = {};
 
+    if (!formData.sender.trim()) {
+      newErrors.sender = "Sender's Name is required";
+    }
+
     if (!formData.senderLocation.trim()) {
       newErrors.senderLocation = 'Sender location is required';
     }
@@ -241,7 +247,9 @@ export default function SendItemScreen() {
       // }
 
       const orderData = {
+        sender: formData.sender,
         pickup_address: formData.senderLocation,
+        recipient: formData.recipient,
         dropoff_address: formData.receiverLocation,
         package_details: JSON.stringify({ description: formData.description }),
         price: 2000,
@@ -252,7 +260,7 @@ export default function SendItemScreen() {
 
       const data = await response.data;
 
-      console.log(data)
+      // console.log(data)
 
       if (data.success) {
         Alert.alert(
@@ -353,6 +361,28 @@ export default function SendItemScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Sender */}
+          <View style={{ marginTop: spacing.lg }}>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  fontSize: fontSize.md,
+                  borderColor: errors.sender ? '#FF3B30' : '#E0E0E0',
+                }
+              ]}
+              placeholder="Sender's Full Name:"
+              placeholderTextColor="#999"
+              value={formData.sender}
+              onChangeText={(value) => updateFormData('sender', value)}
+              editable={!isSubmitting}
+              multiline
+            />
+            {errors.sender && (
+              <Text style={styles.errorText}>{errors.sender}</Text>
+            )}
+          </View>
+          
           {/* Item Location */}
           <View style={{ marginTop: spacing.lg }}>
             <TextInput
