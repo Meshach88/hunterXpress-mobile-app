@@ -2,21 +2,34 @@ import { io } from "socket.io-client";
 
 let socket = null;
 
-export const connectSocket = () => {
+export const connectSocket = (user) => {
+  if (!user) return null;
 
   if (!socket) {
 
-    socket = io("https://67cb-102-89-22-210.ngrok-free.app", {
+    let url;
+    // Assign namespace based on user type
+    if (user.role === "courier") {
+      url = "https://71eb-102-88-115-168.ngrok-free.app/courier";
+    } else if (user.role === "customer") {
+      url = "https://71eb-102-88-115-168.ngrok-free.app/customer";
+    } else {
+      console.warn("Unknown user type, socket not connected");
+      return null;
+    }
+
+    socket = io(url, {
       transports: ["websocket"],
       autoConnect: true,
+      query: { userId: user._id}
     });
 
     socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
+      console.log(`${user.role} socket connected:`, socket.id);
     });
 
     socket.on("disconnect", () => {
-      console.log("Socket disconnected");
+      console.log(`${user.role} socket disconnected`);
     });
 
   }

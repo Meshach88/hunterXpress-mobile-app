@@ -10,7 +10,6 @@ export default function Dashboard() {
     if (isLoading) return;
 
     if (user?.role === 'customer') {
-        console.log('going to customer')
       router.replace('/customer');
     } else if (user?.role === 'courier') {
       router.replace('/courier');

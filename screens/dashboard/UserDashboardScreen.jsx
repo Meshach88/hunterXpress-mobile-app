@@ -55,11 +55,11 @@ export default function DashboardScreen() {
 
     return () => {
       disconnectSocket();
-    }
+    };
   }, []);
 
   const handleSocketConnect = async () => {
-    await connectSocket();
+    await connectSocket(user);
 
     const socket = getSocket();
 
@@ -68,7 +68,6 @@ export default function DashboardScreen() {
     });
 
   }
-
 
   const handleMessagePress = () => {
     if (Platform.OS === 'ios') {

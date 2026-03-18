@@ -69,7 +69,7 @@ export default function CourierDashboardScreen() {
   }, []);
 
   useEffect(() => {
-    connectSocket();
+    connectSocket(user);
 
     return () => {
       disconnectSocket();

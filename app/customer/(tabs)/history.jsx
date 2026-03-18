@@ -258,7 +258,7 @@ export default function DeliveryHistoryScreen() {
                       </Text>
                     </View>
                     <Text style={[styles.locationText, { fontSize: fontSize.md, marginTop: spacing.xs }]}>
-                      {delivery.dropoff_address}
+                      {delivery.dropoff_address?.address}
                     </Text>
                     {delivery.delivery_status === 'in_progress' && delivery.estimatedTime && (
                       <Text style={[styles.timeText, { fontSize: fontSize.sm, marginTop: spacing.xs }]}>
