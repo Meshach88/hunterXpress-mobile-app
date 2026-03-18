@@ -8,6 +8,7 @@ import {
     StyleSheet,
 } from "react-native";
 import axios from "axios";
+import { useResponsive } from "@/hooks/use-responsiveness";
 
 const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 
@@ -17,6 +18,8 @@ export default function AddressAutocompleteInput({
 }) {
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+    const { scale, spacing, fontSize, isTablet } = useResponsive();
+
 
     const searchLocation = async (text) => {
         setQuery(text);
@@ -67,13 +70,15 @@ export default function AddressAutocompleteInput({
                 value={query}
                 onChangeText={searchLocation}
                 placeholder={placeholder}
-                style={styles.input}
+                style={[styles.input, { fontSize: fontSize.md }]}
             />
 
             {suggestions.length > 0 && (
                 <FlatList
                     data={suggestions}
                     keyExtractor={(item) => item.id}
+                    scrollEnabled={false}
+                    nestedScrollEnabled={true}
                     style={styles.list}
                     renderItem={({ item }) => (
                         <TouchableOpacity
@@ -92,21 +97,32 @@ export default function AddressAutocompleteInput({
 const styles = StyleSheet.create({
     container: {
         marginBottom: 16,
+        marginTop: 24,
+        position: 'relative'
     },
 
     input: {
         borderWidth: 1,
-        borderColor: "#ccc",
-        padding: 12,
-        borderRadius: 6,
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        borderColor: "#E0E0E0",
         backgroundColor: "#fff",
+        color: '#000',
+        fontFamily: 'Sora-Regular',
+        minHeight: 56,
     },
 
     list: {
+        position: "absolute",
+        top: 55,
+        left: 0,
+        right: 0,
         backgroundColor: "#fff",
         borderWidth: 1,
         borderColor: "#ddd",
-        marginTop: 4,
+        zIndex: 1000,
+        elevation: 5,
     },
 
     item: {

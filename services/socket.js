@@ -10,9 +10,9 @@ export const connectSocket = (user) => {
     let url;
     // Assign namespace based on user type
     if (user.role === "courier") {
-      url = "https://71eb-102-88-115-168.ngrok-free.app/courier";
+      url = "https://hunterxpress-backend.onrender.com/courier";
     } else if (user.role === "customer") {
-      url = "https://71eb-102-88-115-168.ngrok-free.app/customer";
+      url = "https://hunterxpress-backend.onrender.com/customer";
     } else {
       console.warn("Unknown user type, socket not connected");
       return null;

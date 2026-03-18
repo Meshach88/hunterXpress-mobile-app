@@ -29,12 +29,12 @@ const PaymentScreen = () => {
         {
             id: 'sender_address',
             title: "Sender's Address",
-            content: orderDetails?.order.pickup_address || 'No address found.'
+            content: orderDetails?.order.pickup_address.address || 'No address found.'
         },
         {
             id: 'receiver_address',
             title: "Receiver's Address",
-            content: orderDetails?.order.dropoff_address || 'No address found.'
+            content: orderDetails?.order.dropoff_address.address || 'No address found.'
         },
         {
             id: 'description',
@@ -44,15 +44,16 @@ const PaymentScreen = () => {
         {
             id: 'price',
             title: 'Price',
-            content: `₦ ${Number((orderDetails?.order.price)) || 1000}`
+            content: `₦ ${Number(orderDetails?.order.price) || 1000}`
         },
     ]
 
     const calculateDeliveryFee = async () => {
+        const price = Number(orderDetails?.order.price)
         setIsCalculating(true);
         //Mock API response
         setTimeout(() => {
-            setDeliveryFee(2000);
+            setDeliveryFee(price);
             setShowPayment(true);
             setIsCalculating(false);
         }, 2000);

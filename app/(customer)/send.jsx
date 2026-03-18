@@ -22,6 +22,10 @@ import * as Haptics from 'expo-haptics';
 import { useAuth } from '@/hooks/useAuth';
 import { useResponsive } from '@/hooks/use-responsiveness';
 import api from '@/api/api';
+import AddressAutocompleteInput from '@/components/map/AddressAutoComplete';
+import axios from 'axios';
+
+const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 
 export default function SendItemScreen() {
   const router = useRouter();
@@ -60,6 +64,41 @@ export default function SendItemScreen() {
       );
     }
   };
+
+  useEffect(() => {
+    const fetchRoute = async () => {
+      if (!pickup?.lat || !dropoff?.lat) return;
+
+      try {
+
+        const response = await axios.get(
+          `https://api.mapbox.com/directions/v5/mapbox/driving/${pickup.lng},${pickup.lat};${dropoff.lng},${dropoff.lat}`,
+          {
+            params: {
+              access_token: MAPBOX_TOKEN,
+              geometries: "geojson",
+              overview: "full",
+            },
+          }
+        );
+
+        const route = response.data.routes[0];
+
+        setFormData({
+          ...formData,
+          distance_km: (route.distance / 1000).toFixed(2),
+          estimated_time: Math.ceil(route.duration / 60),
+          price: (100 * (route.distance / 1000)).toFixed(2)
+        })
+
+      } catch (error) {
+        console.error("Route fetch error:", error);
+      } finally {
+      }
+    };
+
+    fetchRoute();
+  }, [pickup, dropoff]);
 
   const getCurrentLocation = async () => {
     try {
@@ -220,9 +259,9 @@ export default function SendItemScreen() {
       newErrors.recipient = "Recipient's Name is required";
     }
 
-    if (!formData.receiverLocation.trim()) {
-      newErrors.receiverLocation = 'Receiver location is required';
-    }
+    // if (!formData.receiverLocation.trim()) {
+    //   newErrors.receiverLocation = 'Receiver location is required';
+    // }
 
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
@@ -262,13 +301,17 @@ export default function SendItemScreen() {
 
       const orderData = {
         sender: formData.sender,
-        pickup_address: formData.senderLocation,
+        pickup_address: JSON.stringify(pickup),
         recipient: formData.recipient,
-        dropoff_address: formData.receiverLocation,
+        dropoff_address: JSON.stringify(dropoff),
+        distance_km: formData.distance_km,
+        estimated_time: formData.estimated_time,
         package_details: JSON.stringify({ description: formData.description }),
-        price: 2000,
-        distance_km: 10
+        price: formData.price,
+        delivery_type: 'send'
       }
+
+      console.log('Order data', orderData);
 
       const response = await api.post('/deliveries', orderData);
 
@@ -398,7 +441,7 @@ export default function SendItemScreen() {
           </View>
 
           {/* Receiver Location */}
-          <View style={{ marginTop: spacing.lg }}>
+          {/* <View style={{ marginTop: spacing.lg }}>
             <TextInput
               style={[
                 styles.input,
@@ -417,14 +460,14 @@ export default function SendItemScreen() {
             {errors.receiverLocation && (
               <Text style={styles.errorText}>{errors.receiverLocation}</Text>
             )}
-          </View>
+          </View> */}
 
           <AddressAutocompleteInput
-            placeholder="Enter Drop-off Address"
+            placeholder="Receiver's location:"
             onSelectLocation={setDropoff}
           />
 
-          {pickup && (
+          {/* {pickup && (
             <Text style={styles.result}>
               Pickup: {pickup.address}
             </Text>
@@ -434,7 +477,7 @@ export default function SendItemScreen() {
             <Text style={styles.result}>
               Drop: {dropoff.address}
             </Text>
-          )}
+          )} */}
 
           {/* Description */}
           <View style={{ marginTop: spacing.lg }}>
