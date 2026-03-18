@@ -33,12 +33,18 @@ export default function SendItemScreen() {
     senderLocation: '',
     recipient: '',
     receiverLocation: '',
+    distance_km: 0,
+    estimated_time: 0,
+    price: 0,
     description: '',
     photo: null,
   });
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const [pickup, setPickup] = useState(null);
+  const [dropoff, setDropoff] = useState(null);
 
   // Request location permissions on mount
   useEffect(() => {
@@ -66,8 +72,9 @@ export default function SendItemScreen() {
       }
 
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
+        accuracy: Location.Accuracy.High,
       });
+
 
       // Reverse geocode to get address
       const address = await Location.reverseGeocodeAsync({
@@ -77,6 +84,13 @@ export default function SendItemScreen() {
 
       if (address[0]) {
         const locationString = `${address[0].street || ''}, ${address[0].city || ''}, ${address[0].region || ''}`.trim();
+
+        setPickup({
+          address: locationString,
+          lat: location.coords.latitude,
+          lng: location.coords.longitude
+        })
+
         setFormData(prev => ({
           ...prev,
           senderLocation: locationString,
@@ -405,6 +419,23 @@ export default function SendItemScreen() {
             )}
           </View>
 
+          <AddressAutocompleteInput
+            placeholder="Enter Drop-off Address"
+            onSelectLocation={setDropoff}
+          />
+
+          {pickup && (
+            <Text style={styles.result}>
+              Pickup: {pickup.address}
+            </Text>
+          )}
+
+          {dropoff && (
+            <Text style={styles.result}>
+              Drop: {dropoff.address}
+            </Text>
+          )}
+
           {/* Description */}
           <View style={{ marginTop: spacing.lg }}>
             <TextInput
@@ -631,5 +662,9 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  result: {
+    marginTop: 10,
+    fontSize: 14,
   },
 });

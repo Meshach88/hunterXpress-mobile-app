@@ -83,11 +83,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="locations-earnings"
+        name="earnings"
         options={{
-          title: userType == 'customer' ? 'Locations' : 'Earnings',
+          title: 'Earnings',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name={userType == 'customer' ? "location" : 'wallet'} size={size} color={color} />
+            <Ionicons name='wallet' size={size} color={color} />
           ),
         }}
         listeners={{

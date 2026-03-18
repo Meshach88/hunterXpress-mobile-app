@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -18,10 +18,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { useResponsive } from '@/hooks/use-responsiveness';
 import TransactionList from '@/components/dashboard/TransactionList';
 import LogisticsCards from '@/components/dashboard/LogisticsCards';
+import { connectSocket, disconnectSocket, getSocket } from "@/services/socket";
+import { connect } from 'socket.io-client';
+import { useAuth } from '@/hooks/useAuth';
 
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const { user, userType } = useAuth();
   const { theme, isDark } = useTheme();
   const { scale, isTablet } = useResponsive();
 
@@ -45,6 +49,26 @@ export default function DashboardScreen() {
       timeToLocation: '20 mins to delivery location',
     },
   ];
+
+  useEffect(() => {
+    handleSocketConnect();
+
+    return () => {
+      disconnectSocket();
+    }
+  }, []);
+
+  const handleSocketConnect = async () => {
+    await connectSocket();
+
+    const socket = getSocket();
+
+    socket.emit("register_customer", {
+      customerId: user._id
+    });
+
+  }
+
 
   const handleMessagePress = () => {
     if (Platform.OS === 'ios') {
@@ -79,7 +103,7 @@ export default function DashboardScreen() {
                 <Ionicons name="person" size={scale(40)} color={theme.colors.primary} style={styles.avatar} />
                 <View style={styles.greetingContainer}>
                   <Text style={[styles.greeting, { color: theme.colors.text }]}>
-                    Hi Adam!
+                    Hi {user?.name?.split(' ')[0] || 'User'}!
                   </Text>
                   <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
                     How can we help you today?

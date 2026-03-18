@@ -49,9 +49,9 @@ export default function LoginScreen() {
             const result = await login(emailOrPhone, password)
 
             // console.log('Log in response', result);
-            const userType = result.data.user.role == 'customer' ? 'User' : 'Courier';
-
+            
             if (result.success) {
+                const userType = result.data.user.role == 'customer' ? 'User' : 'Courier';
                 router.push({
                     pathname: '/(tabs)/',
                     params: { userType }

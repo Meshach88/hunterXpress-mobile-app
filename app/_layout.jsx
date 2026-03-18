@@ -8,17 +8,6 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import {
-  Sora_100Thin,
-  Sora_200ExtraLight,
-  Sora_300Light,
-  Sora_400Regular,
-  Sora_500Medium,
-  Sora_600SemiBold,
-  Sora_700Bold,
-  Sora_800ExtraBold,
-} from '@expo-google-fonts/sora';
-
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 //Keep splash screen visible while fetching resources
@@ -30,13 +19,8 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 //   fade: true
 // })
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
 function RootLayoutNav() {
   const { user, isLoading } = useAuth();
-  // console.log("user", user);
   const segments = useSegments();
   const router = useRouter();
 
@@ -44,24 +28,40 @@ function RootLayoutNav() {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inTabsGroup = segments[0] === '(tabs)';
+    const inCustomerGroup = segments[0] === 'customer';
+    const inCourierGroup = segments[0] === 'courier';
 
     if (!user && !inAuthGroup) {
       // Redirect to welcome/login if not authenticated
       router.replace('/');
-    } else if (user && inAuthGroup) {
+      return;
+    }
+
+    if (user && inAuthGroup) {
       // Redirect to main app if authenticated
-      router.replace('/(tabs)');
+      router.replace('/dashboard');
+      return;
+    }
+    // 🧠 ROLE-BASED PROTECTION
+
+    if (user?.userType === 'customer') {
+      // ❌ Customer trying to access courier routes
+      if (inCourierGroup) {
+        router.replace('/customer');
+      }
+    }
+
+    if (user?.userType === 'courier') {
+      // ❌ Courier trying to access customer routes
+      if (inCustomerGroup) {
+        router.replace('/courier');
+      }
     }
   }, [user, segments, isLoading]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
-      <Stack.Screen name="signup" />
-      <Stack.Screen name="login" />
-      <Stack.Screen name="confirm" />
-      <Stack.Screen name="(tabs)" />
     </Stack>
   );
 }
