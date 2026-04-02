@@ -3,8 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const api = axios.create({
-    baseURL: "https://hunterxpress-backend.onrender.com/api", 
-    // baseURL: "https://71eb-102-88-115-168.ngrok-free.app/api", 
+    // baseURL: "https://hunterxpress-backend.onrender.com/api", 
+    baseURL: "https://6728-102-88-113-142.ngrok-free.app/api", 
 });
 
 api.interceptors.request.use(async (config) => {

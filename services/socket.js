@@ -10,9 +10,11 @@ export const connectSocket = (user) => {
     let url;
     // Assign namespace based on user type
     if (user.role === "courier") {
-      url = "https://hunterxpress-backend.onrender.com/courier";
+      // url = "https://hunterxpress-backend.onrender.com/courier";
+      url = "https://6728-102-88-113-142.ngrok-free.app/courier";
     } else if (user.role === "customer") {
-      url = "https://hunterxpress-backend.onrender.com/customer";
+      // url = "https://hunterxpress-backend.onrender.com/customer";
+      url = "https://6728-102-88-113-142.ngrok-free.app/customer";
     } else {
       console.warn("Unknown user type, socket not connected");
       return null;
@@ -21,7 +23,7 @@ export const connectSocket = (user) => {
     socket = io(url, {
       transports: ["websocket"],
       autoConnect: true,
-      query: { userId: user._id}
+      query: { userId: user._id }
     });
 
     socket.on("connect", () => {

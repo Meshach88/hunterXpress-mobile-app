@@ -29,14 +29,14 @@ const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 
 export default function SendItemScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, uploadToCloudinary } = useAuth();
   const { scale, spacing, fontSize, isTablet } = useResponsive();
 
   const [formData, setFormData] = useState({
     sender: user.name,
     senderLocation: '',
     recipient: '',
-    receiverLocation: '',
+    // receiverLocation: '',
     distance_km: 0,
     estimated_time: 0,
     price: 0,
@@ -46,6 +46,7 @@ export default function SendItemScreen() {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [dropoffError, setDropoffError] = useState({});
 
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
@@ -250,25 +251,32 @@ export default function SendItemScreen() {
 
   const validateForm = () => {
     const newErrors = {};
+    const newDropoffError = {};
 
     if (!formData.senderLocation.trim()) {
       newErrors.senderLocation = 'Sender location is required';
     }
 
     if (!formData.recipient.trim()) {
-      newErrors.recipient = "Recipient's Name is required";
+      newErrors.recipient = "Recipient's name is required";
     }
 
     // if (!formData.receiverLocation.trim()) {
     //   newErrors.receiverLocation = 'Receiver location is required';
     // }
 
+    if (!dropoff?.address?.trim()) {
+      newDropoffError.message = "Receiver's location is required";
+      newDropoffError.error = true;
+      setDropoffError(newDropoffError);
+    }
+
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return (Object.keys(newErrors).length === 0 && !dropoffError);
   };
 
   const handlePlaceOrder = async () => {
@@ -299,6 +307,12 @@ export default function SendItemScreen() {
       //   });
       // }
 
+      let photo;
+
+      if (formData.photo) {
+        photo = await uploadToCloudinary(formData.photo)
+      }
+
       const orderData = {
         sender: formData.sender,
         pickup_address: JSON.stringify(pickup),
@@ -308,7 +322,8 @@ export default function SendItemScreen() {
         estimated_time: formData.estimated_time,
         package_details: JSON.stringify({ description: formData.description }),
         price: formData.price,
-        delivery_type: 'send'
+        delivery_type: 'send',
+        photo
       }
 
       console.log('Order data', orderData);
@@ -327,8 +342,8 @@ export default function SendItemScreen() {
             {
               text: 'OK',
               onPress: () => router.push({
-                pathname: '/(customer)/payment',
-                params: { order: JSON.stringify(data) }
+                pathname: '/(customer)/search-courier',
+                params: { order: JSON.stringify(data.order) }
               }),
             },
           ]
@@ -465,7 +480,12 @@ export default function SendItemScreen() {
           <AddressAutocompleteInput
             placeholder="Receiver's location:"
             onSelectLocation={setDropoff}
+            setError={setDropoffError}
+            error={dropoffError.error}
           />
+          {dropoffError.error && (
+            <Text style={[styles.errorText, { marginTop: -10 }]}>{dropoffError.message}</Text>
+          )}
 
           {/* {pickup && (
             <Text style={styles.result}>
@@ -550,12 +570,35 @@ export default function SendItemScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Cost Summary */}
+          {
+            formData.price
+              ?
+              (<View style={styles.costCard}>
+                <View style={styles.costRow}>
+                  <Text style={styles.costLabel}>Delivery Fee</Text>
+                  <Text style={styles.costPrice}>₦{formData.price}</Text>
+                </View>
+
+                <View style={styles.divider} />
+
+                <View style={styles.costRow}>
+                  <Text style={styles.costLabel}>Estimated Delivery</Text>
+                  <Text style={styles.costTime}>
+                    {formData.estimated_time} mins
+                  </Text>
+                </View>
+              </View>)
+              :
+              null
+          }
+
           {/* Place Order Button */}
           <TouchableOpacity
             style={[
               styles.placeOrderButton,
               {
-                marginTop: spacing.xl * 2,
+                marginTop: spacing.xl,
                 marginBottom: spacing.xl,
                 height: scale(56),
               },
@@ -706,8 +749,51 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
-  result: {
-    marginTop: 10,
+  costCard: {
+    backgroundColor: "#FFFFFF",
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 4,
+      }
+    })
+  },
+
+  costRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  costLabel: {
     fontSize: 14,
+    fontFamily: 'Sora-SemiBold',
+    color: "#6B7280",
+  },
+
+  costPrice: {
+    fontSize: 20,
+    fontFamily: 'Sora-Bold',
+    color: "#F97316",
+  },
+
+  costTime: {
+    fontSize: 15,
+    fontFamily: 'Sora-Bold',
+    color: "#111827",
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#E5E7EB",
+    marginVertical: 12,
   },
 });

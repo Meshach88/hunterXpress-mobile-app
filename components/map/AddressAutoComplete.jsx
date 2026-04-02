@@ -15,6 +15,8 @@ const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 export default function AddressAutocompleteInput({
     placeholder,
     onSelectLocation,
+    setError,
+    error
 }) {
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
@@ -22,6 +24,7 @@ export default function AddressAutocompleteInput({
 
 
     const searchLocation = async (text) => {
+        setError(false);
         setQuery(text);
 
         if (text.length < 3) {
@@ -62,6 +65,7 @@ export default function AddressAutocompleteInput({
         setSuggestions([]);
 
         onSelectLocation(location);
+        
     };
 
     return (
@@ -70,7 +74,7 @@ export default function AddressAutocompleteInput({
                 value={query}
                 onChangeText={searchLocation}
                 placeholder={placeholder}
-                style={[styles.input, { fontSize: fontSize.md }]}
+                style={[styles.input, { fontSize: fontSize.md, borderColor: error ? '#FF3B30' : '#E0E0E0'}]}
             />
 
             {suggestions.length > 0 && (
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 14,
-        borderColor: "#E0E0E0",
+        // borderColor: "#E0E0E0",
         backgroundColor: "#fff",
         color: '#000',
         fontFamily: 'Sora-Regular',
